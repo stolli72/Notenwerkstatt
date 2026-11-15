@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notenwerkstatt · Gute Hasen dürfen fast alles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f1e6;--paper-2:#efe7d6;--card:#fffdf8;--ink:#1c2333;--ink-soft:#4a5266;--muted:#857e70;
+  --line:#2a3142;--rule:#e2d8c4;--brass:#c4862a;--brass-soft:#f4e3c4;
+  --good:#2d7a4c;--good-soft:#d8efdf;--bad:#c13d36;--bad-soft:#f8dcd8;
+  --radius:22px;--shadow:0 1px 0 #fff inset,0 18px 40px -22px #3a2c1080;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Figtree,system-ui,sans-serif;
+  background:var(--paper);
+  background-image:repeating-linear-gradient(0deg,transparent 0 31px,#e9dfcb55 31px 32px);}
+main{max-width:980px;margin:auto;padding:22px 20px 40px}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--brass);outline-offset:3px}
+[hidden]{display:none!important}
+
+/* Header */
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0 20px}
+.brand{display:flex;align-items:center;gap:12px;font-family:Fraunces,Georgia,serif;font-weight:600;font-size:20px;letter-spacing:-.2px}
+.brand-mark{width:40px;height:40px;border-radius:12px;background:var(--ink);display:grid;place-items:center;box-shadow:0 6px 14px -6px #1c233390}
+.brand-mark svg{width:22px;height:22px}
+.head-right{display:flex;align-items:center;gap:10px}
+.chip{font-size:11px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--rule);background:#fffaf0;border-radius:99px;padding:7px 12px}
+.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--rule);background:#fffaf0;display:grid;place-items:center;cursor:pointer}
+.icon-btn svg{width:20px;height:20px}
+.icon-btn[aria-pressed="false"] .wave{display:none}
+.icon-btn[aria-pressed="true"] .mute{display:none}
+
+/* Learn */
+.hero{display:grid;gap:8px;margin:18px 0 22px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--brass)}
+h1{font-family:Fraunces,Georgia,serif;font-weight:800;font-size:clamp(28px,4.6vw,46px);line-height:1.08;letter-spacing:-1px;margin:6px 0 4px}
+h1 .ini{color:var(--brass)}
+.lead{font-size:20px;line-height:1.55;color:var(--ink-soft);max-width:640px;margin:4px 0 0}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:var(--shadow)}
+.staff-card{padding:26px 22px 18px;position:relative;overflow:hidden}
+.staff-card .tagline{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin:0 6px 6px}
+.staff-learn{display:block;width:100%;height:auto}
+.staff-learn .n{cursor:pointer}
+.staff-learn .n .head{transition:transform .2s}
+.staff-learn .n:hover .head,.staff-learn .n:focus .head{transform:scale(1.15)}
+.staff-learn .n:focus{outline:none}
+.staff-learn .n:focus-visible .ring{stroke:var(--brass);stroke-width:3}
+.pop{opacity:0;animation:pop .5s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes pop{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.explain{display:flex;gap:14px;align-items:flex-start;margin:16px 6px 4px;padding:16px 18px;background:var(--paper);border-radius:14px;border:1px dashed var(--rule)}
+.explain .badge{flex:none;width:34px;height:34px;border-radius:10px;background:var(--brass-soft);color:#8a5a12;display:grid;place-items:center;font-weight:800;font-family:Fraunces,serif}
+.explain p{margin:0;line-height:1.6;color:var(--ink-soft);font-size:17px}
+.explain strong{color:var(--ink)}
+.letters{font-family:Fraunces,serif;font-weight:800;letter-spacing:2px;color:var(--ink)}
+
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.level{text-align:left;cursor:pointer;padding:22px 22px 20px;display:grid;gap:6px;transition:transform .15s,box-shadow .15s;border:1px solid var(--rule)}
+.level:hover{transform:translateY(-3px);box-shadow:0 24px 44px -24px #3a2c10a0}
+.level .num{font-size:12px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted)}
+.level .ttl{font-family:Fraunces,serif;font-weight:600;font-size:28px;letter-spacing:-.5px}
+.level .desc{color:var(--ink-soft);line-height:1.5;font-size:15px}
+.level .go{margin-top:8px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.level.primary{background:var(--ink);color:#fbf6ea;border-color:var(--ink)}
+.level.primary .num{color:#d9b679}.level.primary .desc{color:#c9cbd3}
+.foot{font-size:13px;text-align:center;color:var(--muted);margin:28px 0 0}
+
+/* Game */
+.gamebar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 14px}
+.back{display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;color:var(--ink-soft);font-weight:600;padding:8px 4px;border-radius:8px}
+.lvl-pill{font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;padding:7px 12px;border-radius:99px;background:var(--ink);color:#fbf6ea}
+.game-title{font-family:Fraunces,serif;font-weight:600;font-size:clamp(22px,3.4vw,30px);letter-spacing:-.4px;margin:0 0 6px}
+.game-rule{margin:0 0 16px;color:var(--ink-soft);font-size:17px;line-height:1.5}
+.board{padding:22px;display:grid;gap:16px}
+.status{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.round{font-weight:700;font-size:15px}
+.round:focus{outline:none}.round span{color:var(--muted);font-weight:500}
+.segs{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;flex:1;min-width:180px;max-width:360px}
+.seg{height:8px;border-radius:9px;background:var(--paper-2);transition:background .3s}
+.seg.cur{background:var(--brass-soft);box-shadow:inset 0 0 0 2px var(--brass)}
+.seg.ok{background:var(--good)}.seg.no{background:var(--bad)}
+.tally{font-weight:600;color:var(--ink-soft);font-size:15px}
+
+.score{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap}
+.score-btn{display:inline-flex;align-items:baseline;gap:10px;padding:10px 22px;border-radius:16px;border:2px solid var(--rule);background:var(--paper);cursor:pointer;transition:background .25s,color .25s,border-color .25s,transform .25s}
+.score-btn .cap{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.score-btn .val{font-family:Fraunces,serif;font-weight:800;font-size:40px;line-height:1}
+.score-btn.up{background:var(--good);border-color:var(--good);color:#fff;transform:scale(1.05)}
+.score-btn.down{background:var(--bad);border-color:var(--bad);color:#fff;transform:scale(1.05)}
+.score-btn.up .cap,.score-btn.down .cap{color:#ffffffc0}
+.score-rule{font-size:13px;color:var(--ink-soft);margin:0}
+
+.stage{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;align-items:center}
+.staff-box{background:#fff;border:1px solid var(--rule);border-radius:16px;padding:10px 8px}
+.staff-game{display:block;width:100%;height:auto}
+.staff-game .hl{stroke:var(--brass);stroke-width:5;opacity:.0;transition:opacity .3s}
+.staff-game.reveal .hl{opacity:.55}
+.staff-game .lbl{font:700 15px Figtree,sans-serif;fill:var(--brass);opacity:0;transition:opacity .3s}
+.staff-game.reveal .lbl{opacity:1}
+.note-in{animation:drop .45s cubic-bezier(.2,1.3,.4,1)}
+@keyframes drop{from{transform:translateY(-18px);opacity:0}to{transform:none;opacity:1}}
+
+.answer-zone{display:grid;justify-items:center;gap:10px}
+.answer-zone .q{font-size:13px;color:var(--muted);font-weight:600}
+.slot{width:104px;height:104px;border-radius:20px;border:2.5px dashed #cdbf9f;background:var(--paper);font:800 54px Fraunces,Georgia,serif;color:var(--ink);cursor:pointer;display:grid;place-items:center;transition:all .2s}
+.slot.empty::after{content:'?';color:#cdbf9f;font-size:44px}
+.slot.armed{border-color:var(--brass);background:var(--brass-soft)}
+.slot.over{border-style:solid;border-color:var(--brass);background:var(--brass-soft);transform:scale(1.06)}
+.slot.filled{border-style:solid;background:#fff}
+.slot.good{border:3px solid var(--good);background:var(--good-soft);color:var(--good);animation:yes .5s}
+.slot.bad{border:3px solid var(--bad);background:var(--bad-soft);color:var(--bad);animation:no .45s}
+@keyframes yes{40%{transform:scale(1.12)}}
+@keyframes no{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+
+.bank{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.tile{width:68px;height:72px;border-radius:14px;border:1.5px solid var(--line);background:#fff;font:800 36px Fraunces,Georgia,serif;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;box-shadow:0 5px 0 var(--line);transition:transform .1s,box-shadow .1s,background .15s}
+.tile:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
+.tile.selected{background:var(--brass);color:#fff;border-color:#8a5a12;box-shadow:0 5px 0 #8a5a12;transform:translateY(-4px)}
+.tile.right{background:var(--good-soft);border-color:var(--good);color:var(--good);box-shadow:0 5px 0 var(--good)}
+.tile:disabled{cursor:default;opacity:.55}
+.tile.right:disabled{opacity:1}
+.helper{text-align:center;font-size:13px;color:var(--muted);margin:0}
+.kbd{display:inline-block;border:1px solid var(--rule);border-bottom-width:2px;border-radius:5px;padding:0 5px;font-size:12px;background:#fff}
+.feedback{min-height:28px;text-align:center;font-weight:700;font-size:17px;margin:0}
+.feedback.ok{color:var(--good)}.feedback.no{color:var(--bad)}
+
+.help{padding:18px;border-radius:16px;background:var(--brass-soft);border:1px solid #e8cf9f;display:grid;gap:10px}
+.help h2{margin:0;font-family:Fraunces,serif;font-weight:600;font-size:20px}
+.help p{margin:0;color:#5c4a2a;line-height:1.5}
+.help-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.timer{height:4px;border-radius:4px;background:#e8cf9f;overflow:hidden}
+.timer span{display:block;height:100%;background:var(--brass);width:100%}
+.timer.run span{animation:shrink linear forwards}
+@keyframes shrink{to{width:0}}
+.btn{border:0;border-radius:12px;padding:14px 22px;font-weight:700;font-size:15px;cursor:pointer;background:var(--ink);color:#fbf6ea;box-shadow:0 4px 0 #000}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #000}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--rule);box-shadow:0 4px 0 var(--rule)}
+.btn.brass{background:var(--brass);box-shadow:0 4px 0 #8a5a12}
+
+.drag-ghost{position:fixed;z-index:20;pointer-events:none;width:68px;height:72px;border-radius:14px;background:var(--brass);color:#fff;display:grid;place-items:center;font:800 36px Fraunces,serif;box-shadow:0 16px 30px -8px #0006;transform:rotate(-4deg)}
+
+/* Result */
+.result{padding:38px 26px;text-align:center;display:grid;gap:10px;justify-items:center}
+.result .big{font-family:Fraunces,serif;font-weight:800;font-size:clamp(64px,13vw,104px);line-height:1;letter-spacing:-3px;color:var(--ink)}
+.result .big small{font-size:.4em;color:var(--muted);letter-spacing:0}
+.result .sub{color:var(--ink-soft);margin:0}
+.dots{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;justify-content:center}
+.dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;background:var(--bad)}
+.dot.ok{background:var(--good)}
+.result h2{font-family:Fraunces,serif;font-weight:600;font-size:30px;margin:8px 0 0;letter-spacing:-.4px}
+.result p.txt{color:var(--ink-soft);max-width:440px;line-height:1.6;margin:0 0 12px}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+@media (max-width:720px){
+  main{padding:16px 14px 32px}
+  .chip{display:none}
+  .levels{grid-template-columns:1fr}
+  .stage{grid-template-columns:1fr}
+  .board{padding:16px}
+  .slot{width:88px;height:88px;font-size:46px}
+  .tile{width:54px;height:62px;font-size:30px}
+  .bank{gap:9px}
+  .lead{font-size:17px}
+  .explain p{font-size:16px}
+  .game-rule{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.pop{opacity:1}}
+
+/* Aufgaben-Tabs */
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:5px;background:var(--paper-2);border:1px solid var(--rule);border-radius:16px;width:max-content;max-width:100%;margin:4px 0 6px}
+.tab{flex:none;white-space:nowrap;border:0;background:none;border-radius:12px;padding:10px 16px;font-weight:700;font-size:14px;color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;gap:8px}
+.tab .no{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:var(--rule);color:var(--ink);font-size:12px}
+.tab[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 4px 12px -6px #3a2c1060}
+.tab[aria-selected="true"] .no{background:var(--brass);color:#fff}
+.explain + .explain{margin-top:10px}
+.scale{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.scale span{font:800 17px Fraunces,Georgia,serif;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;border:1.5px solid var(--rule);background:#fff;color:var(--ink-soft)}
+.scale span.sp{background:var(--brass);border-color:var(--brass);color:#fff}
+.levels.single{grid-template-columns:1fr}
+.staff-game .band{fill:var(--brass);opacity:0;transition:opacity .3s}
+.staff-game.reveal .band{opacity:.3}
+.legend{display:flex;gap:18px;justify-content:center;font-size:13px;color:var(--muted);margin:2px 0 4px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:6px;vertical-align:-1px;background:var(--ink)}
+.legend i.nw{background:var(--brass)}
+/* Notenreihen */
+.stage.rows{grid-template-columns:1fr}
+.rowwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;background:#fff;border:1px solid var(--rule);border-radius:16px;padding:10px 10px 14px}
+.rowinner{min-width:700px}
+.staff-row{display:block;width:100%;height:auto}
+.staff-row .cur ellipse{fill:var(--brass)}
+.staff-row .done-ok ellipse{fill:var(--good)}
+.staff-row .done-no ellipse{fill:var(--bad)}
+.staff-row .cur-mark{fill:var(--brass-soft)}
+.boxes{display:grid;grid-template-columns:repeat(10,1fr);gap:0;padding-left:11%;padding-right:1%}
+.box{justify-self:center;width:min(58px,88%);aspect-ratio:1;border:2px solid #cdbf9f;border-radius:10px;display:grid;place-items:center;font:800 28px Fraunces,Georgia,serif;background:#fff;color:var(--ink);padding:0}
+.box.slot{width:min(58px,88%);height:auto;font-size:28px;border-radius:10px}
+.box.slot.empty::after{font-size:24px}
+.box.ok{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.box{position:relative}
+.box.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.box.no small{position:absolute;top:-9px;right:-7px;font:700 10px Figtree,sans-serif;background:var(--bad);color:#fff;border-radius:6px;padding:2px 5px;white-space:nowrap}
+.board>*,.stage>*{min-width:0}
+.dots.many .dot{width:20px;height:20px;font-size:9px}
+.brand{cursor:pointer;background:none;border:0;padding:4px;border-radius:12px;color:inherit}
+.crumb{display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;color:var(--ink-soft);font-weight:600;padding:6px 2px;margin-bottom:6px}
+.gb-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.skip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);background:#fffaf0;color:var(--ink-soft);border-radius:99px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer}
+.skip:hover{background:var(--brass-soft);color:var(--ink);border-color:#e8cf9f}
+.skip svg{width:12px;height:12px}
+/* Titelseite */
+.cover{position:relative;overflow:hidden;padding:clamp(28px,5vw,52px) clamp(22px,5vw,52px) 26px;background:var(--ink);color:#fbf6ea;border:0;border-radius:28px;box-shadow:0 30px 60px -30px #1c2333a0}
+.cover .eyebrow{color:#d9b679}
+.cover h1{color:#fbf6ea;font-size:clamp(34px,6vw,64px);margin:10px 0 14px;max-width:760px}
+.cover h1 em{font-style:italic;font-weight:600;color:#e9b866}
+.cover .lead{color:#c9cbd3;max-width:620px;font-size:20px}
+.cover-staff{display:block;width:100%;height:auto;margin:22px 0 4px}
+.cover-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:13px;color:#c9cbd3}
+.cover-legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.cover-cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:24px}
+.cover .btn.brass{font-size:16px;padding:16px 26px}
+.cover .meta{font-size:13px;color:#9ea2ad}
+.tasks{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:16px;margin-top:20px}
+.task{text-align:left;cursor:pointer;padding:22px;display:grid;gap:8px;align-content:start;transition:transform .15s,box-shadow .15s;position:relative}
+.task:hover{transform:translateY(-3px);box-shadow:0 24px 44px -24px #3a2c10a0}
+.task .top{display:flex;justify-content:space-between;align-items:center}
+.task .no{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font:800 17px Fraunces,serif;color:#fff}
+.task .done{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--good);background:var(--good-soft);border-radius:99px;padding:4px 9px}
+.task{padding:18px!important}.task .ttl{font-family:Fraunces,serif;font-weight:600;font-size:20px;letter-spacing:-.4px;margin-top:4px}
+.task .ms{font-family:Fraunces,serif;font-style:italic;color:var(--ink-soft);font-size:16px;line-height:1.4}
+.task .nn{font:800 16px Fraunces,serif;letter-spacing:3px;color:var(--ink)}
+.task .what{font-size:14px;color:var(--muted);line-height:1.5}
+.task .go{font-weight:700;font-size:14px;margin-top:4px}
+@media (max-width:720px){.tasks{grid-template-columns:1fr}.cover-staff{margin-top:14px}}
+.tile.long{width:84px;font-size:26px}
+.drag-ghost.long{width:84px;font-size:26px}
+.slot.long{font-size:38px}
+.box.long{font-size:19px}
+.sharp-rule{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:8px 0 2px}
+.sharp-rule .pair{display:inline-flex;align-items:center;gap:0;background:#fff;border:1px solid var(--rule);border-radius:12px;padding:6px 12px;font:800 20px Fraunces,Georgia,serif}
+.sharp-rule .pair em{font-style:normal;color:var(--brass)}
+.sharp-rule .arr{color:var(--muted);font-weight:400;margin:0 8px}
+@media (max-width:720px){.tile.long{width:66px;font-size:21px}}
+.breakdown{display:grid;gap:8px;width:100%;max-width:440px;margin:6px 0 4px}
+.bd-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;font-size:14px;text-align:left}
+.bd-row .bar{grid-column:1/-1;height:8px;border-radius:8px;background:var(--paper-2);overflow:hidden}
+.bd-row .bar span{display:block;height:100%;border-radius:8px;background:var(--good)}
+.bd-row .bar span.mid{background:var(--brass)}.bd-row .bar span.low{background:var(--bad)}
+.bd-row b{font-weight:700}
+.test-card{width:100%;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:22px 24px;cursor:pointer;text-align:left;border:2px solid var(--ink);background:var(--card)}
+.test-card:hover{transform:translateY(-2px)}
+.test-card .ttl{font-family:Fraunces,serif;font-weight:600;font-size:24px}
+.test-card .what{font-size:14px;color:var(--ink-soft)}
+.test-card .go{font-weight:700}
+.areas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:6px 6px 4px}
+.area{background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:14px}
+.area b{display:block;font-family:Fraunces,serif;font-size:18px}
+.area span{font-size:13px;color:var(--muted)}
+.section-head{margin:40px 0 4px}
+.section-head h2{font-family:Fraunces,serif;font-weight:600;font-size:clamp(26px,4vw,34px);letter-spacing:-.5px;margin:4px 0 2px}
+.section-head p{margin:0;color:var(--ink-soft)}
+.games{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:14px}
+.game-card{padding:22px;display:grid;gap:10px;align-content:start}
+.game-card .gico{width:100%;height:auto;display:block;border-radius:12px;background:#fff;border:1px solid var(--rule)}
+.game-card .ttl{font-family:Fraunces,serif;font-weight:600;font-size:24px;letter-spacing:-.4px}
+.game-card .desc{color:var(--ink-soft);line-height:1.5;font-size:15px;margin:0}
+.gbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.btn.small{padding:11px 16px;font-size:14px}
+.target{text-align:center;font-size:15px;font-weight:600;color:var(--muted)}
+.target b{display:block;font:800 clamp(40px,7vw,56px) Fraunces,Georgia,serif;color:var(--ink);line-height:1.1;margin-top:2px}
+.place-box{background:#fff;border:1px solid var(--rule);border-radius:16px;padding:6px 8px}
+.place-svg{display:block;width:100%;max-width:640px;margin:auto;height:auto;cursor:pointer;touch-action:none;border-radius:10px}
+.place-svg:focus{outline:none}.place-svg:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+.word-svg{display:block;width:100%;max-width:760px;height:auto;margin:auto}
+.accs{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.acc{border:1.5px solid var(--rule);background:#fff;border-radius:12px;padding:11px 18px;font-weight:700;font-size:15px;cursor:pointer}
+.acc[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:default}
+.word-reveal{text-align:center;font:800 clamp(40px,9vw,68px) Fraunces,Georgia,serif;letter-spacing:8px;color:var(--good);animation:yes .5s}
+#wbank .tile{font-size:32px}
+.task.game{background:linear-gradient(180deg,#fffaf0,#fbf3e2);cursor:pointer}
+.task.game .gno{background:var(--brass)!important;border-radius:50%}
+.task .tagg{font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#8a5a12;background:var(--brass-soft);border-radius:99px;padding:4px 9px}
+.task .tags{display:flex;gap:6px;align-items:center}
+.task .tags .done{padding:4px 8px}
+.task.game .gbtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.task.game .btn.small{padding:9px 12px;font-size:13px}
+.bank.extra{margin-top:10px}
+.bank.extra .tile{background:var(--brass-soft)}
+.mem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:640px;width:100%;margin:auto}
+.mem-card{aspect-ratio:4/3.4;border:0;padding:0;background:none;cursor:pointer;perspective:700px}
+.mem-inner{position:relative;display:block;width:100%;height:100%;transition:transform .45s;transform-style:preserve-3d}
+.mem-card.up .mem-inner{transform:rotateY(180deg)}
+.mem-back,.mem-face{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:grid;place-items:center}
+.mem-back{background:var(--ink);color:#e9b866;font-size:34px;box-shadow:0 5px 0 #0b0f18;background-image:repeating-linear-gradient(0deg,transparent 0 9px,#ffffff10 9px 10px)}
+.mem-face{transform:rotateY(180deg);background:#fff;border:2px solid var(--brass);box-shadow:0 5px 0 #e8cf9f}
+.mem-card.done .mem-face{border-color:var(--good);background:var(--good-soft);box-shadow:0 5px 0 #b6dcc2}
+.mem-card:disabled{cursor:default}
+.mem-svg{width:92%;height:auto}
+.mem-name{font:800 clamp(30px,6vw,44px) Fraunces,Georgia,serif;color:var(--ink)}
+.mem-name.long{font-size:clamp(24px,5vw,36px)}
+@media (max-width:720px){.mem-grid{grid-template-columns:repeat(3,1fr);gap:9px}.mem-card{aspect-ratio:1/1}}
+.staff-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.swipe-hint{display:none}
+@media (max-width:720px){
+  .staff-scroll .staff-learn{min-width:560px}
+  #helpstaff .staff-learn{min-width:440px}
+  .swipe-hint{display:block;text-align:center;font-size:13px;color:var(--muted);margin:2px 0 0}
+  .gamebar{flex-wrap:wrap;row-gap:8px}
+  .back,.crumb{white-space:nowrap;min-height:44px}
+  .skip{min-height:40px;padding:8px 14px;font-size:13px}
+  .lvl-pill{font-size:11px;letter-spacing:1px}
+  .staff-card .tagline{flex-direction:column;gap:2px;font-size:13px}
+  .staff-box{padding:6px 2px}
+  .word-svg{min-width:0}
+}
+@media (max-width:720px){.tab{padding:9px 11px;font-size:13px}.tab .lbl-long{display:none}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <button class="brand" id="home-link" aria-label="Zur Titelseite">
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18.5a3 3 0 1 1-2-2.83V4l12-2v13.5a3 3 0 1 1-2-2.83V5.4l-8 1.33z" fill="#f4e3c4"/></svg></div>
+      Notenwerkstatt
+    </button>
+    <div class="head-right">
+      <span class="chip">Bassschlüssel</span>
+      <button class="icon-btn" id="sound" aria-pressed="true" aria-label="Ton an oder aus" title="Ton an/aus">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1c2333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z" fill="#1c2333"/><path class="wave" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="mute" d="M17 9l5 6M22 9l-5 6"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- TITELSEITE -->
+  <section id="home">
+    <div class="cover">
+      <div class="eyebrow">Notenwerkstatt · Notenlesen lernen</div>
+      <h1>Übungen zum <em>Bass&shy;schlüssel</em></h1>
+      <p class="lead">Fünf Aufgaben, drei Spiele und ein Abschlusstest: Noten im Bassschlüssel sicher lesen. Mit Merksätzen, Merkbildern und Punktejagden.</p>
+      <div id="coverstaff"></div>
+      <div class="cover-legend">
+        <span><i style="background:#fbf6ea"></i>Linien</span>
+        <span><i style="background:#e9b866"></i>Zwischenräume</span>
+        <span><i style="background:#7fc79a"></i>neu in der Tonleiter</span>
+      </div>
+      <div class="cover-cta">
+        <button class="btn brass" id="cover-start">Mit Aufgabe 1 beginnen →</button>
+        <span class="meta">ca. 25 Minuten · Ton an für Hörbeispiele</span>
+      </div>
+    </div>
+    <div class="tasks">
+      <button class="card task" data-goto="lines">
+        <div class="top"><span class="no" style="background:var(--ink)">1</span><span class="tags"><span class="done" data-done="lines" hidden>✓</span><span class="tagg">Übung</span></span></div>
+        <span class="ttl">Die fünf Linien</span>
+        <span class="ms">„Gute Hasen dürfen fast alles.“</span>
+        <span class="nn">G H d f a</span>
+        <span class="what">Merkbild · Üben · Punktejagd</span>
+        <span class="go">Öffnen →</span>
+      </button>
+      <button class="card task" data-goto="spaces">
+        <div class="top"><span class="no" style="background:var(--brass)">2</span><span class="tags"><span class="done" data-done="spaces" hidden>✓</span><span class="tagg">Übung</span></span></div>
+        <span class="ttl">Die Zwischenräume</span>
+        <span class="ms">„Alle Clowns erhalten Gagen.“</span>
+        <span class="nn">A c e g</span>
+        <span class="what">Merkbild · Punktejagd</span>
+        <span class="go">Öffnen →</span>
+      </button>
+      <button class="card task" data-goto="scale">
+        <div class="top"><span class="no" style="background:var(--good)">3</span><span class="tags"><span class="done" data-done="scale" hidden>✓</span><span class="tagg">Übung</span></span></div>
+        <span class="ttl">Die Tonleiter</span>
+        <span class="ms">Raum, Linie, Raum, Linie …</span>
+        <span class="nn">c d e f g a h c</span>
+        <span class="what">Merkbild · Treppe · Notenreihen</span>
+        <span class="go">Öffnen →</span>
+      </button>
+      <button class="card task" data-goto="sharps">
+        <div class="top"><span class="no" style="background:#8a5a12">4</span><span class="tags"><span class="done" data-done="sharps" hidden>✓</span><span class="tagg">Übung</span></span></div>
+        <span class="ttl">Kreuz-Noten ♯</span>
+        <span class="ms">Ein Kreuz – und hinten kommt „-is“ dazu.</span>
+        <span class="nn">cis dis eis fis …</span>
+        <span class="what">Merkbild · kurze Übung</span>
+        <span class="go">Öffnen →</span>
+      </button>
+      <button class="card task" data-goto="flats">
+        <div class="top"><span class="no" style="background:#4a5266">5</span><span class="tags"><span class="done" data-done="flats" hidden>✓</span><span class="tagg">Übung</span></span></div>
+        <span class="ttl">b-Noten ♭</span>
+        <span class="ms">Ein b – und hinten kommt „-es“ dazu.</span>
+        <span class="nn">ces des es …</span>
+        <span class="what">Merkbild · kurze Übung</span>
+        <span class="go">Öffnen →</span>
+      </button>
+      <div class="card task game">
+        <div class="top"><span class="no gno">6</span><span class="tagg">Spiel</span></div>
+        <span class="ttl">Noten setzen</span>
+        <span class="ms">Andersherum: Der Name steht da – du setzt die Note.</span>
+        <span class="what">Leicht oder mit ♯ und ♭</span>
+        <div class="gbtns"><button class="btn small" data-play="easy">Leicht</button><button class="btn small ghost" data-play="pro">Mit ♯ ♭</button></div>
+      </div>
+      <button class="card task game" data-play="words">
+        <div class="top"><span class="no gno">7</span><span class="tagg">Spiel</span></div>
+        <span class="ttl">Notenwörter</span>
+        <span class="ms">In den Noten verstecken sich Wörter.</span>
+        <span class="nn">BACH · FISCH …</span>
+        <span class="what">6 Wörter knacken</span>
+        <span class="go">Spielen →</span>
+      </button>
+      <button class="card task game" data-play="memory">
+        <div class="top"><span class="no gno">8</span><span class="tagg">Spiel</span></div>
+        <span class="ttl">Noten-Memory</span>
+        <span class="ms">Finde Note und Namen – immer neu gemischt.</span>
+        <span class="nn">12 Karten</span>
+        <span class="what">6 Paare aufdecken</span>
+        <span class="go">Spielen →</span>
+      </button>
+    </div>
+    <button class="card test-card" data-goto="test">
+      <div><div class="eyebrow">Zum Schluss</div><div class="ttl">Abschlusstest <span class="done" data-done="test" hidden style="font:700 11px Figtree;letter-spacing:1px;text-transform:uppercase;color:var(--good);background:var(--good-soft);border-radius:99px;padding:4px 9px;vertical-align:middle">✓ geschafft</span></div>
+      <div class="what">20 Fragen aus allen fünf Bereichen · Auswertung nach Bereichen</div></div>
+      <span class="go">Test öffnen →</span>
+    </button>
+
+    <p class="foot">Tipp für Lehrkräfte: In jeder Übung führt „Überspringen“ direkt zum nächsten Schritt.</p>
+  </section>
+
+  <!-- LERNEN -->
+  <section id="learn" hidden>
+    <button class="crumb" id="tohome">← Übersicht</button>
+    <div class="tabs" role="tablist" aria-label="Aufgaben">
+      <button class="tab" role="tab" id="tab-lines" aria-controls="learn-lines" aria-selected="true"><span class="no">1</span>Linien<span class="lbl-long">&nbsp;· G H d f a</span></button>
+      <button class="tab" role="tab" id="tab-spaces" aria-controls="learn-spaces" aria-selected="false"><span class="no">2</span>Zwischenräume<span class="lbl-long">&nbsp;· A c e g</span></button>
+      <button class="tab" role="tab" id="tab-scale" aria-controls="learn-scale" aria-selected="false"><span class="no">3</span>Tonleiter<span class="lbl-long">&nbsp;· c bis c</span></button>
+      <button class="tab" role="tab" id="tab-sharps" aria-controls="learn-sharps" aria-selected="false"><span class="no">4</span>Kreuz ♯<span class="lbl-long">&nbsp;· cis bis his</span></button>
+      <button class="tab" role="tab" id="tab-flats" aria-controls="learn-flats" aria-selected="false"><span class="no">5</span>b ♭<span class="lbl-long">&nbsp;· ces bis b</span></button>
+      <button class="tab" role="tab" id="tab-test" aria-controls="learn-test" aria-selected="false"><span class="no">✓</span>Test</button>
+    </div>
+
+    <!-- Aufgabe 1 -->
+    <div id="learn-lines" role="tabpanel" aria-labelledby="tab-lines">
+      <div class="hero">
+        <div class="eyebrow">Aufgabe 1 · Die fünf Linien</div>
+        <h1><span class="ini">G</span>ute <span class="ini">H</span>asen <span class="ini">d</span>ürfen <span class="ini">f</span>ast <span class="ini">a</span>lles.</h1>
+        <p class="lead">Ein einziger Satz – und du kennst alle fünf Notenlinien im Bassschlüssel.</p>
+      </div>
+      <div class="card staff-card">
+        <div class="tagline"><span>Von unten nach oben lesen</span><span>Tippe eine Note an, um sie zu hören</span></div>
+        <p class="swipe-hint">← zum Ansehen seitlich wischen →</p><div class="staff-scroll"><div id="learnstaff-lines"></div></div>
+        <div class="explain">
+          <div class="badge">!</div>
+          <p>Die <strong>Anfangsbuchstaben jedes Wortes</strong> sind die <strong>Notennamen der fünf Linien</strong> – von der untersten bis zur obersten: <span class="letters">G – H – d – f – a</span>.</p>
+        </div>
+      </div>
+      <div class="levels">
+        <button class="card level primary" data-task="lines" data-level="1">
+          <span class="num">Level 1</span><span class="ttl">Üben</span>
+          <span class="desc">10 Noten ganz in Ruhe. Bei einem Fehler zeigt dir das Merkbild die Lösung.</span>
+          <span class="go">Los geht’s →</span>
+        </button>
+        <button class="card level" data-task="lines" data-level="2">
+          <span class="num">Level 2</span><span class="ttl">Punktejagd</span>
+          <span class="desc">Jede Antwort zählt: richtig +1, falsch −1 Punkt – auch unter null.</span>
+          <span class="go">Punkte sammeln →</span>
+        </button>
+      </div>
+      <p class="foot">Jede der fünf Noten kommt zweimal vor.</p>
+    </div>
+
+    <!-- Aufgabe 2 -->
+    <div id="learn-spaces" role="tabpanel" aria-labelledby="tab-spaces" hidden>
+      <div class="hero">
+        <div class="eyebrow">Aufgabe 2 · Die vier Zwischenräume</div>
+        <h1><span class="ini">A</span>lle <span class="ini">C</span>lowns <span class="ini">e</span>rhalten <span class="ini">G</span>agen.</h1>
+        <p class="lead">Zwischen den fünf Linien liegen vier Räume. Auch dafür gibt es einen Merksatz.</p>
+      </div>
+      <div class="card staff-card">
+        <div class="tagline"><span>Von unten nach oben lesen</span><span>Tippe eine Note an, um sie zu hören</span></div>
+        <p class="swipe-hint">← zum Ansehen seitlich wischen →</p><div class="staff-scroll"><div id="learnstaff-spaces"></div></div>
+        <div class="explain">
+          <div class="badge">!</div>
+          <p>Die <strong>Anfangsbuchstaben</strong> sind die <strong>Notennamen der vier Zwischenräume</strong> – von unten nach oben: <span class="letters">A – c – e – g</span>. Achtung: Nur das <strong>A</strong> wird großgeschrieben, <strong>c, e, g</strong> klein.</p>
+        </div>
+      </div>
+      <div class="levels single">
+        <button class="card level primary" data-task="spaces" data-level="2">
+          <span class="num">Aufgabe 2 · Punktejagd</span><span class="ttl">Zwischenräume erkennen</span>
+          <span class="desc">8 Noten in den Zwischenräumen. Richtig +1, falsch −1 Punkt – auch unter null.</span>
+          <span class="go">Punkte sammeln →</span>
+        </button>
+      </div>
+      <p class="foot">Jede der vier Noten kommt zweimal vor.</p>
+    </div>
+
+    <!-- Aufgabe 3 -->
+    <div id="learn-scale" role="tabpanel" aria-labelledby="tab-scale" hidden>
+      <div class="hero">
+        <div class="eyebrow">Aufgabe 3 · Die Tonleiter von c bis c</div>
+        <h1>Raum, Linie, Raum, Linie – <span class="ini">Stufe für Stufe</span>.</h1>
+        <p class="lead">Jetzt kommt alles zusammen. Die Tonleiter beginnt im 2. Zwischenraum und steigt wie eine Treppe: Jede Stufe wechselt zwischen Raum und Linie.</p>
+      </div>
+      <div class="card staff-card">
+        <div class="tagline"><span>Von unten nach oben lesen</span><span>Tippe eine Note an, um sie zu hören</span></div>
+        <p class="swipe-hint">← zum Ansehen seitlich wischen →</p><div class="staff-scroll"><div id="learnstaff-scale"></div></div>
+        <div class="legend"><span><i class="k"></i>kennst du schon</span><span><i class="nw"></i>neu</span></div>
+        <div class="explain">
+          <div class="badge">!</div>
+          <p>Sechs Noten kennst du schon: <strong>c, e, g</strong> aus den Zwischenräumen, <strong>d, f, a</strong> von den Linien. Neu sind nur zwei: Das <strong>h</strong> sitzt direkt <strong>über der obersten Linie</strong>. Das <strong>hohe c</strong> bekommt eine eigene kurze <strong>Hilfslinie</strong>.</p>
+        </div>
+        <div class="explain">
+          <div class="badge">?</div>
+          <p><strong>Trick für schwierige Noten:</strong> Such dir die nächste Note, die du sicher kennst, und zähle Stufe für Stufe weiter. Achtung: Im Deutschen kommt nach <strong>a</strong> das <strong>h</strong>!</p>
+        </div>
+      </div>
+      <div class="levels">
+        <button class="card level primary" data-task="scale" data-level="1">
+          <span class="num">Level 1</span><span class="ttl">Tonleiter-Treppe</span>
+          <span class="desc">Die Treppe hinauf und wieder hinunter: Benenne jede Note der Reihe nach. Bei Fehlern hilft das Merkbild.</span>
+          <span class="go">Los geht’s →</span>
+        </button>
+        <button class="card level" data-task="scale" data-level="2">
+          <span class="num">Level 2 · Punktejagd</span><span class="ttl">Notenreihen</span>
+          <span class="desc">Wie auf dem Arbeitsblatt: 3 Reihen mit je 10 gemischten Noten, Kästchen für Kästchen. +1 / −1 Punkt.</span>
+          <span class="go">Punkte sammeln →</span>
+        </button>
+      </div>
+      <p class="foot">Tipp: Beide c heißen einfach „c“ – das obere ist das hohe c.</p>
+    </div>
+
+    <!-- Aufgabe 4 -->
+    <div id="learn-sharps" role="tabpanel" aria-labelledby="tab-sharps" hidden>
+      <div class="hero">
+        <div class="eyebrow">Aufgabe 4 · Noten mit Kreuz</div>
+        <h1>Ein Kreuz – und hinten kommt <span class="ini" style="white-space:nowrap">„-is“</span> dazu.</h1>
+        <p class="lead">Das Kreuz ♯ macht eine Note um einen Halbton höher. Die Note bleibt auf ihrem Platz – nur ihr Name bekommt die Endung „-is“: aus c d e f g a h wird cis dis eis fis gis ais his.</p>
+      </div>
+      <div class="card staff-card">
+        <div class="tagline"><span>Alle Kreuz-Noten von unten nach oben</span><span>Tippe eine Note an, um sie zu hören</span></div>
+        <p class="swipe-hint">← zum Ansehen seitlich wischen →</p><div class="staff-scroll"><div id="learnstaff-sharps"></div></div>
+        <div class="explain">
+          <div class="badge">1</div>
+          <p><strong>Zuerst die Note lesen, als gäbe es kein Kreuz.</strong> Dann „-is“ anhängen:
+            <span class="sharp-rule">
+              <span class="pair">f <span class="arr">→</span> f<em>is</em></span>
+              <span class="pair">c <span class="arr">→</span> c<em>is</em></span>
+              <span class="pair">h <span class="arr">→</span> h<em>is</em></span>
+            </span>
+          </p>
+        </div>
+        <div class="explain">
+          <div class="badge">2</div>
+          <p>Das Kreuz steht <strong>direkt vor der Note</strong>, auf derselben Linie oder im selben Zwischenraum. Das gilt auch für <strong>eis</strong> und <strong>his</strong> – sie klingen wie f und das hohe c, heißen aber trotzdem eis und his.</p>
+        </div>
+      </div>
+      <div class="levels single">
+        <button class="card level primary" data-task="sharps" data-level="1">
+          <span class="num">Aufgabe 4 · Übung</span><span class="ttl">Kreuz-Noten lesen</span>
+          <span class="desc">Eine kurze Notenreihe mit 10 Kreuz-Noten – ohne Punkte, einfach üben.</span>
+          <span class="go">Los geht’s →</span>
+        </button>
+      </div>
+      <p class="foot">Stammtöne c bis h – jeder bekommt ein Kreuz.</p>
+    </div>
+
+    <!-- Aufgabe 5 -->
+    <div id="learn-flats" role="tabpanel" aria-labelledby="tab-flats" hidden>
+      <div class="hero">
+        <div class="eyebrow">Aufgabe 5 · Noten mit b</div>
+        <h1>Ein b – und hinten kommt <span class="ini" style="white-space:nowrap">„-es“</span> dazu.</h1>
+        <p class="lead">Das b ♭ macht eine Note um einen Halbton tiefer. Die Note bleibt auf ihrem Platz – aus c d e f g a h wird ces des es fes ges as b.</p>
+      </div>
+      <div class="card staff-card">
+        <div class="tagline"><span>Alle b-Noten von unten nach oben</span><span>Tippe eine Note an, um sie zu hören</span></div>
+        <p class="swipe-hint">← zum Ansehen seitlich wischen →</p><div class="staff-scroll"><div id="learnstaff-flats"></div></div>
+        <div class="explain">
+          <div class="badge">1</div>
+          <p><strong>Zuerst die Note lesen, als gäbe es kein b.</strong> Dann „-es“ anhängen:
+            <span class="sharp-rule">
+              <span class="pair">d <span class="arr">→</span> d<em>es</em></span>
+              <span class="pair">g <span class="arr">→</span> g<em>es</em></span>
+              <span class="pair">c <span class="arr">→</span> c<em>es</em></span>
+            </span>
+          </p>
+        </div>
+        <div class="explain">
+          <div class="badge">!</div>
+          <p><strong>Drei Ausnahmen</strong> – die musst du dir merken:
+            <span class="sharp-rule">
+              <span class="pair">e <span class="arr">→</span> e<em>s</em></span>
+              <span class="pair">a <span class="arr">→</span> a<em>s</em></span>
+              <span class="pair">h <span class="arr">→</span> <em>b</em></span>
+            </span>
+          </p>
+        </div>
+      </div>
+      <div class="levels single">
+        <button class="card level primary" data-task="flats" data-level="1">
+          <span class="num">Aufgabe 5 · Übung</span><span class="ttl">b-Noten lesen</span>
+          <span class="desc">Eine kurze Notenreihe mit 10 b-Noten – ohne Punkte, einfach üben.</span>
+          <span class="go">Los geht’s →</span>
+        </button>
+      </div>
+      <p class="foot">Stammtöne c bis h – jeder bekommt ein b.</p>
+    </div>
+
+    <!-- Abschlusstest -->
+    <div id="learn-test" role="tabpanel" aria-labelledby="tab-test" hidden>
+      <div class="hero">
+        <div class="eyebrow">Abschlusstest</div>
+        <h1>Zeig, was du <span class="ini">kannst</span>.</h1>
+        <p class="lead">20 Noten aus allen Bereichen, bunt gemischt. Zu jeder Note gibt es vier Antworten – eine davon stimmt. Es gibt keinen Punktabzug.</p>
+      </div>
+      <div class="card staff-card">
+        <div class="tagline"><span>Das kommt im Test vor</span><span>je 4 Fragen</span></div>
+        <div class="areas">
+          <div class="area"><b>Linien</b><span>G H d f a</span></div>
+          <div class="area"><b>Zwischenräume</b><span>A c e g</span></div>
+          <div class="area"><b>Tonleiter</b><span>c bis hohes c</span></div>
+          <div class="area"><b>Kreuz ♯</b><span>cis bis his</span></div>
+          <div class="area"><b>b ♭</b><span>ces bis b</span></div>
+        </div>
+        <div class="explain">
+          <div class="badge">?</div>
+          <p>Am Ende siehst du für jeden Bereich, wie viele Noten du richtig hattest – so weißt du genau, was du noch üben kannst.</p>
+        </div>
+      </div>
+      <div class="levels single">
+        <button class="card level primary" data-task="test" data-level="1">
+          <span class="num">Abschlusstest</span><span class="ttl">Test starten</span>
+          <span class="desc">20 Fragen · Antwort antippen · Auswertung nach Bereichen.</span>
+          <span class="go">Los geht’s →</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPIELE-BEREICH -->
+  <section id="play" hidden>
+    <div class="gamebar">
+      <button class="back" id="playback">← Übersicht</button>
+      <div class="gb-right"><span class="lvl-pill" id="playpill"></span></div>
+    </div>
+    <h2 class="game-title" id="playtitle"></h2>
+    <p class="game-rule" id="playrule"></p>
+    <div class="card board" id="playboard"></div>
+  </section>
+
+  <!-- SPIEL -->
+  <section id="game" hidden>
+    <div class="gamebar">
+      <button class="back" id="back">← Merkbild</button>
+      <div class="gb-right">
+        <span class="lvl-pill" id="lvlpill"></span>
+        <button class="skip" id="skip" title="Übung überspringen"><span id="skiplabel">Überspringen</span><svg viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M1 1.5v9l5-4.5zM6 1.5v9l5-4.5z"/></svg></button>
+      </div>
+    </div>
+    <h2 class="game-title" id="gametitle"></h2>
+    <p class="game-rule" id="gamerule"></p>
+
+    <div class="card board">
+      <div class="status">
+        <div class="round" id="round"></div>
+        <div class="segs" id="segs" aria-hidden="true"></div>
+        <div class="tally" id="tally"></div>
+      </div>
+      <div class="score" id="score" hidden>
+        <button class="score-btn" id="scorebtn" aria-expanded="false" aria-controls="scorerule">
+          <span class="cap">Punkte</span><span class="val" id="scoreval" aria-live="polite">0</span>
+        </button>
+        <p class="score-rule" id="scorerule" hidden>Richtig: +1 Punkt · Falsch: −1 Punkt</p>
+      </div>
+      <div class="stage" id="stage">
+        <div class="staff-box" id="gamestaff"></div>
+        <div class="answer-zone" id="answerzone">
+          <span class="q">Deine Antwort</span>
+        </div>
+      </div>
+      <div class="bank" id="bank" role="group" aria-label="Buchstaben zur Auswahl"></div>
+      <p class="helper" id="keyhelp"></p>
+      <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+      <section class="help" id="help" hidden aria-label="Merkhilfe">
+        <h2 id="helptitle">Schau dir den Merksatz noch einmal an</h2>
+        <div class="staff-scroll"><div id="helpstaff"></div></div>
+        <div class="help-row">
+          <p>Von unten nach oben: <strong class="letters" id="helpletters"></strong></p>
+          <button class="btn brass" id="next">Nächste Note →</button>
+        </div>
+        <div class="timer" id="timer"><span></span></div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ERGEBNIS -->
+  <section id="result" hidden>
+    <div class="hero" style="text-align:center;justify-items:center">
+      <div class="eyebrow" id="reseyebrow"></div>
+    </div>
+    <div class="card result">
+      <div class="big" id="resbig"></div>
+      <p class="sub" id="ressub"></p>
+      <div class="dots" id="dots"></div>
+      <div class="breakdown" id="breakdown" hidden></div>
+      <h2 id="restitle"></h2>
+      <p class="txt" id="restext"></p>
+      <div class="controls">
+        <button class="btn" id="again">Noch einmal spielen</button>
+        <button class="btn brass" id="levelup"></button>
+        <button class="btn ghost" id="learnagain">Merkbild ansehen</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const INK='#1c2333';
+const BASE=130;                       // y der untersten Linie im Merkbild
+const PY=(p,base=BASE)=>base-p*10;    // p = Halbstufen über der untersten Linie (0 = G)
+const LY=k=>PY(k*2);
+const TASKS={
+  lines:{
+    names:['G','H','d','f','a'],words:['Gute','Hasen','dürfen','fast','alles'],
+    pos:[0,2,4,6,8],freq:[98.00,123.47,146.83,174.61,220.00],
+    letters:'G – H – d – f – a',title:'Auf welcher Linie liegt die Note?',label:'Aufgabe 1 · Linien',
+    where:'auf einer der fünf Notenlinien',
+    aria:'Bassschlüssel mit fünf Notenlinien. Von unten nach oben: G wie Gute, H wie Hasen, d wie dürfen, f wie fast, a wie alles.'
+  },
+  spaces:{
+    names:['A','c','e','g'],words:['Alle','Clowns','erhalten','Gagen'],
+    pos:[1,3,5,7],freq:[110.00,130.81,164.81,196.00],
+    letters:'A – c – e – g',title:'In welchem Zwischenraum liegt die Note?',label:'Aufgabe 2 · Zwischenräume',
+    where:'in einem der vier Zwischenräume',
+    aria:'Bassschlüssel mit vier Zwischenräumen. Von unten nach oben: A wie Alle, c wie Clowns, e wie erhalten, g wie Gagen.'
+  },
+  scale:{
+    names:['c','d','e','f','g','a','h','c'],
+    caps:['2. Raum','3. Linie','3. Raum','4. Linie','4. Raum','5. Linie','über der Linie','Hilfslinie'],
+    hint:['im 2. Zwischenraum','auf der 3. Linie','im 3. Zwischenraum','auf der 4. Linie','im 4. Zwischenraum','auf der obersten Linie','direkt über der obersten Linie','auf der Hilfslinie – das hohe c'],
+    fresh:[false,false,false,false,false,false,true,true],
+    pos:[3,4,5,6,7,8,9,10],freq:[130.81,146.83,164.81,174.61,196.00,220.00,246.94,261.63],
+    letters:'c – d – e – f – g – a – h – c',title:'Wie heißt diese Note?',label:'Aufgabe 3 · Tonleiter',
+    where:'zwischen c und dem hohen c',
+    aria:'Bassschlüssel mit der Tonleiter von c bis zum hohen c: c, d, e, f, g, a, h, c. Neu sind h über der obersten Linie und das hohe c auf einer Hilfslinie.'
+  }
+};
+TASKS.sharps={
+  names:['cis','dis','eis','fis','gis','ais','his'],
+  base:['c','d','e','f','g','a','h'],sharp:true,caps:['','','','','','',''],
+  hint:['das c im 2. Zwischenraum plus Kreuz','das d auf der 3. Linie plus Kreuz','das e im 3. Zwischenraum plus Kreuz','das f auf der 4. Linie plus Kreuz','das g im 4. Zwischenraum plus Kreuz','das a auf der obersten Linie plus Kreuz','das h über der obersten Linie plus Kreuz'],
+  pos:[3,4,5,6,7,8,9],freq:[138.59,155.56,174.61,185.00,207.65,233.08,261.63],
+  letters:'cis – dis – eis – fis – gis – ais – his',title:'Wie heißt diese Kreuz-Note?',label:'Aufgabe 4 · Kreuz-Noten',
+  where:'mit einem Kreuz davor',
+  aria:'Bassschlüssel mit sieben Kreuz-Noten von unten nach oben: cis, dis, eis, fis, gis, ais, his.'
+};
+TASKS.flats={
+  names:['ces','des','es','fes','ges','as','b'],
+  lab:[['c','es'],['d','es'],['e','s'],['f','es'],['g','es'],['a','s'],['','b']],flat:true,caps:['','','','','','',''],
+  hint:['das c im 2. Zwischenraum plus b','das d auf der 3. Linie plus b','das e im 3. Zwischenraum plus b – Ausnahme: nur „s“','das f auf der 4. Linie plus b','das g im 4. Zwischenraum plus b','das a auf der obersten Linie plus b – Ausnahme: nur „s“','das h über der obersten Linie plus b – Ausnahme: es heißt einfach b'],
+  pos:[3,4,5,6,7,8,9],freq:[123.47,138.59,155.56,164.81,185.00,207.65,233.08],
+  letters:'ces – des – es – fes – ges – as – b',title:'Wie heißt diese b-Note?',label:'Aufgabe 5 · b-Noten',
+  where:'mit einem b davor',
+  aria:'Bassschlüssel mit sieben b-Noten von unten nach oben: ces, des, es, fes, ges, as, b.'
+};
+TASKS.sharps.lab=TASKS.sharps.base.map(x=>[x,'is']);
+TASKS.test={names:[],pos:[],acc:[],freq:[],area:[],opts:[],label:'Abschlusstest',title:'Wie heißt diese Note?',where:'',letters:'',caps:[]};
+TASKS.lines.hint=null;
+/* ---- Abschlusstest erzeugen ---- */
+const NAT=['G','A','H','c','d','e','f','g','a','h','c'];          // Index = Position p
+const SEMI=[0,2,4,5,7,9,10,12,14,16,17];                            // Halbtöne über G
+const SH={3:'cis',4:'dis',5:'eis',6:'fis',7:'gis',8:'ais',9:'his'};
+const FL={3:'ces',4:'des',5:'es',6:'fes',7:'ges',8:'as',9:'b'};
+const hz=s=>98*Math.pow(2,s/12);
+function buildTest(){
+  const pick=(arr,k)=>shuffle([...arr]).slice(0,k);
+  const items=[];
+  pick([0,2,4,6,8],4).forEach(p=>items.push({p,a:'',area:'Linien'}));
+  pick([1,3,5,7],4).forEach(p=>items.push({p,a:'',area:'Zwischenräume'}));
+  [pick([9,10],1)[0],...pick([3,4,5,6,7,8],3)].forEach(p=>items.push({p,a:'',area:'Tonleiter'}));
+  pick([3,4,5,6,7,8,9],4).forEach(p=>items.push({p,a:'s',area:'Kreuz ♯'}));
+  pick([3,4,5,6,7,8,9],4).forEach(p=>items.push({p,a:'f',area:'b ♭'}));
+  shuffle(items);
+  const t=TASKS.test;Object.assign(t,{names:[],pos:[],acc:[],freq:[],area:[],opts:[]});
+  items.forEach(it=>{
+    const p=it.p,name=it.a==='s'?SH[p]:it.a==='f'?FL[p]:NAT[p];
+    let cand;
+    if(it.a==='')cand=[1,-1,2,-2,3,-3,4].map(d=>NAT[p+d]).filter(Boolean);
+    else{const other=it.a==='s'?FL:SH,same=it.a==='s'?SH:FL;cand=[NAT[p],other[p],same[p+1],same[p-1],same[p+2],same[p-2]].filter(Boolean)}
+    const opts=[name];cand.forEach(c=>{if(opts.length<4&&!opts.includes(c))opts.push(c)});
+    t.names.push(name);t.pos.push(p);t.acc.push(it.a);t.area.push(it.area);
+    t.freq.push(hz(SEMI[p]+(it.a==='s'?1:it.a==='f'?-1:0)));t.opts.push(shuffle(opts));
+  });
+  return items.map((_,i)=>i);
+}
+const ORDER=['lines','spaces','scale','sharps','flats','test'];
+const STAFFED=['lines','spaces','scale','sharps','flats'];
+const $=id=>document.getElementById(id);
+const S={task:'lines',rounds:[],index:0,points:0,correct:0,level:1,timer:null,selected:null,locked:false,outcomes:[],answers:[],sound:true};
+const T=()=>TASKS[S.task];
+const ROWS=()=>(S.task==='scale'&&S.level===2)||S.task==='sharps'||S.task==='flats';
+const bank=()=>S.task==='test'?T().opts[S.rounds[S.index]]:uniq(T());
+const LONG=()=>S.task==='test'||uniq(T()).some(n=>n.length>1);
+const uniq=t=>[...new Set(t.names)];
+
+/* ---------- Ton ---------- */
+let ctx=null;
+function tone(f){
+  if(!S.sound)return;
+  try{
+    ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();
+    if(ctx.state==='suspended')ctx.resume();
+    const t=ctx.currentTime,o=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain(),g2=ctx.createGain();
+    o.type='triangle';o2.type='sine';o.frequency.value=f;o2.frequency.value=f*2;g2.gain.value=.25;
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.32,t+.015);g.gain.exponentialRampToValueAtTime(.001,t+1.4);
+    o.connect(g);o2.connect(g2);g2.connect(g);g.connect(ctx.destination);
+    o.start(t);o2.start(t);o.stop(t+1.5);o2.stop(t+1.5);
+  }catch(e){}
+}
+$('sound').onclick=()=>{S.sound=!S.sound;$('sound').setAttribute('aria-pressed',String(S.sound))};
+
+/* ---------- Notensatz ---------- */
+function clef(x,fy){
+  return `<g transform="translate(${x} ${fy})" fill="${INK}">
+    <path d="M2 2 C0 -16 16 -27 32 -24 C52 -20 58 -2 52 16 C44 38 22 56 -6 68 L-8 64 C16 50 34 32 38 12 C42 -6 36 -18 24 -18 C14 -18 9 -12 9 -6 Z"/>
+    <circle cx="9" cy="0" r="8"/><circle cx="64" cy="-10" r="4"/><circle cx="64" cy="10" r="4"/></g>`;
+}
+function note(x,y,id,fill=INK){
+  return `<g transform="translate(${x} ${y})">
+    <mask id="${id}" maskUnits="userSpaceOnUse" x="-22" y="-16" width="44" height="32">
+      <rect x="-22" y="-16" width="44" height="32" fill="#fff"/><ellipse rx="5.6" ry="7.4" transform="rotate(-32)" fill="#000"/></mask>
+    <g class="head"><ellipse class="ring" rx="14" ry="9.6" fill="${fill}" mask="url(#${id})"/></g></g>`;
+}
+function ledgers(x,p,base,w=24){ // Hilfslinien über dem System
+  let s='';for(let q=10;q<=p;q+=2)s+=`<line x1="${x-w}" x2="${x+w}" y1="${PY(q,base)}" y2="${PY(q,base)}" stroke="#2a3142" stroke-width="1.8"/>`;return s;
+}
+function sharp(x,y,col=INK){ // Kreuz ♯, zentriert auf y
+  return `<g transform="translate(${x} ${y})" fill="${col}">
+    <rect x="-4.6" y="-17" width="1.9" height="32"/><rect x="2.7" y="-15" width="1.9" height="32"/>
+    <path d="M-9 -3.5 L9 -8.5 L9 -4.5 L-9 0.5Z"/><path d="M-9 6.5 L9 1.5 L9 5.5 L-9 10.5Z"/></g>`;
+}
+function flat(x,y,col=INK){ // b-Vorzeichen, Bauch auf y
+  return `<g transform="translate(${x} ${y}) scale(1.3)" fill="${col}">
+    <rect x="-5" y="-25" width="2" height="32"/>
+    <path d="M-4 6 C4 2 9 -3 7 -7 C5.5 -10 1 -9 -4 -4 L-4 -1.5 C0 -5.5 3.5 -6 4 -3.6 C4.5 -0.8 1 2.5 -4 4.2Z"/></g>`;
+}
+function accOf(t,n){return t.acc?t.acc[n]:t.sharp?'s':t.flat?'f':''}
+function accSym(a,x,y,col){return a==='s'?sharp(x,y,col):a==='f'?flat(x,y,col):''}
+function staffLines(x1,x2,base,w=1.6){
+  let s='';for(let k=0;k<5;k++)s+=`<line x1="${x1}" x2="${x2}" y1="${PY(k*2,base)}" y2="${PY(k*2,base)}" stroke="#2a3142" stroke-width="${w}"/>`;
+  return s+`<line x1="${x2}" x2="${x2}" y1="${PY(8,base)}" y2="${PY(0,base)}" stroke="#2a3142" stroke-width="2.4"/>`;
+}
+function learnStaff(key,prefix,interactive){
+  const t=TASKS[key],n=t.names.length,sc=!!t.caps;
+  const step={5:112,4:140,8:72,7:80}[n],x0={5:176,4:200,8:170,7:190}[n],H=sc?215:200;
+  let s=`<svg class="staff-learn" viewBox="0 0 720 ${H}" role="img" aria-label="${t.aria}">`;
+  s+=staffLines(16,704,BASE)+clef(34,LY(3));
+  t.names.forEach((nm,i)=>{
+    const x=x0+i*step+(accOf(t,i)?10:0),y=PY(t.pos[i]),d=(i*0.14+0.15).toFixed(2),fresh=sc&&t.fresh&&t.fresh[i];
+    s+=`<g class="pop" style="animation-delay:${d}s">`;
+    s+=`<line x1="${x}" x2="${x}" y1="${y+14}" y2="${BASE+28}" stroke="#c4862a" stroke-width="1.4" stroke-dasharray="3 4" opacity=".7"/>`;
+    s+=`<g class="n" data-task="${key}" data-i="${i}" ${interactive?`tabindex="0" role="button" aria-label="Note ${nm} anhören"`:''}>`;
+    s+=ledgers(x,t.pos[i],BASE,22)+accSym(accOf(t,i),x-29,y,'#c4862a')+note(x,y,prefix+i,fresh?'#c4862a':INK);
+    s+=`<rect x="${x-step/2}" y="${y-24}" width="${step}" height="${BASE+80-y}" fill="transparent"/>`;
+    if(sc){
+      s+=`<text x="${x}" y="178" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="${t.lab?27:32}" fill="${fresh?'#c4862a':INK}">${t.lab?`${t.lab[i][0]}<tspan fill="#c4862a">${t.lab[i][1]}</tspan>`:nm}</text>`;
+      s+=`<text x="${x}" y="202" text-anchor="middle" font-family="Figtree,sans-serif" font-size="11.5" fill="#857e70">${t.lab?'':t.caps[i]}</text>`;
+    }else{
+      s+=`<text x="${x}" y="186" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-size="27" fill="${INK}"><tspan font-weight="800" fill="#c4862a">${t.words[i][0]}</tspan>${t.words[i].slice(1)}</text>`;
+    }
+    s+='</g></g>';
+  });
+  return s+'</svg>';
+}
+function gameStaff(n){
+  const t=T(),base=120,p=t.pos[n],y=PY(p,base),line=p%2===0;
+  let s=`<svg class="staff-game" id="gsvg" viewBox="0 0 360 150" role="img" aria-label="Eine ganze Note im Bassschlüssel ${t.where||''}">`;
+  s+=line?`<line class="hl" x1="16" x2="344" y1="${y}" y2="${y}" stroke-linecap="round"/>`:`<rect class="band" x="16" y="${y-10}" width="328" height="20"/>`;
+  s+=staffLines(16,344,base,1.8);
+  s+=`<text class="lbl" x="322" y="${line?y-8:y+5}" text-anchor="middle">${t.names[n]}</text>`;
+  const ac=accOf(t,n);
+  s+=clef(32,PY(6,base));
+  s+=`<g class="note-in">${ledgers(210,p,base)}${accSym(ac,179,y)}${note(210,y,'gn'+S.task+S.index)}</g>`;
+  return s+'</svg>';
+}
+const ROWLEN=10;
+function rowStaff(){
+  const t=T(),base=130,r=Math.floor(S.index/ROWLEN),start=r*ROWLEN,mw=88,x0=110;
+  let s=`<svg class="staff-row" viewBox="0 0 1000 160" role="img" aria-label="Notenreihe ${r+1}: zehn Noten im Bassschlüssel. Benenne sie der Reihe nach.">`;
+  const cur=S.index-start;
+  s+=`<rect class="cur-mark" x="${x0+cur*mw+3}" y="18" width="${mw-6}" height="128" rx="10"/>`;
+  s+=staffLines(16,990,base,1.6)+clef(30,PY(6,base));
+  for(let i=1;i<ROWLEN;i++)s+=`<line x1="${x0+i*mw}" x2="${x0+i*mw}" y1="${PY(8,base)}" y2="${PY(0,base)}" stroke="#2a3142" stroke-width="1.2"/>`;
+  for(let i=0;i<ROWLEN;i++){
+    const k=start+i,n=S.rounds[k],x=x0+i*mw+mw/2,y=PY(t.pos[n],base);
+    const cls=k<S.outcomes.length?(S.outcomes[k]?'done-ok':'done-no'):(k===S.index?'cur':'');
+    const ac=accOf(t,n),dx=ac?8:0;
+    s+=`<g class="${cls}">${ledgers(x+dx,t.pos[n],base,20)}${accSym(ac,x-20,y,cls==='cur'?'#c4862a':INK)}${note(x+dx,y,'rn'+k)}</g>`;
+  }
+  return s+'</svg>';
+}
+STAFFED.forEach(k=>$('learnstaff-'+k).innerHTML=learnStaff(k,'l'+k,true));
+(function coverStaff(){ // Alle Noten von G bis zum hohen c
+  const base=118,cols={line:'#fbf6ea',space:'#e9b866',fresh:'#7fc79a'},paper='#1c2333';
+  let s=`<svg class="cover-staff" viewBox="0 0 900 162" role="img" aria-label="Bassschlüssel mit allen Noten von G bis zum hohen c">`;
+  for(let k=0;k<5;k++)s+=`<line x1="10" x2="890" y1="${PY(k*2,base)}" y2="${PY(k*2,base)}" stroke="#ffffff55" stroke-width="1.5"/>`;
+  s+=clef(28,PY(6,base)).replace(`fill="${INK}"`,'fill="#fbf6ea"');
+  const nm=['G','A','H','c','d','e','f','g','a','h','c'];
+  nm.forEach((n,p)=>{
+    const x=150+p*68,y=PY(p,base),c=p>=9?cols.fresh:p%2?cols.space:cols.line;
+    for(let q=10;q<=p;q+=2)s+=`<line x1="${x-22}" x2="${x+22}" y1="${PY(q,base)}" y2="${PY(q,base)}" stroke="#ffffff99" stroke-width="1.5"/>`;
+    s+=`<g class="pop" style="animation-delay:${(p*.07+.1).toFixed(2)}s">`+note(x,y,'cv'+p,c).replace('<g class="head">','<g class="head">')+
+       `<text x="${x}" y="${base+30}" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="20" fill="${c}">${n}</text></g>`;
+  });
+  $('coverstaff').innerHTML=s+'</svg>';
+})();
+document.querySelectorAll('.staff-learn .n[role=button]').forEach(g=>{
+  const f=TASKS[g.dataset.task].freq[+g.dataset.i];
+  g.addEventListener('click',()=>tone(f));
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tone(f)}});
+});
+
+/* ---------- Tabs ---------- */
+function showTask(key){
+  S.task=key;
+  ORDER.forEach(k=>{$('tab-'+k).setAttribute('aria-selected',String(k===key));$('learn-'+k).hidden=k!==key});
+  document.querySelectorAll('#learn-'+key+' .pop').forEach(el=>{el.style.animation='none';el.getBoundingClientRect();el.style.animation=''});
+}
+ORDER.forEach(k=>$('tab-'+k).onclick=()=>showTask(k));
+document.querySelector('.tabs').addEventListener('keydown',e=>{
+  if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
+  const i=ORDER.indexOf(S.task),k=ORDER[(i+(e.key==='ArrowRight'?1:ORDER.length-1))%ORDER.length];
+  showTask(k);$('tab-'+k).focus();
+});
+
+/* ---------- Aufgaben erzeugen ---------- */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function makeRow(){ // 10 Noten: alle 8 Tonleiter-Noten + 2 zufällige, nie zweimal dieselbe hintereinander
+  for(;;){
+    const m=T().names.length,r=shuffle([...Array(m).keys(),...Array(10-m).fill(0).map(()=>Math.floor(Math.random()*m))]);
+    if(r.every((v,i)=>i===0||T().names[v]!==T().names[r[i-1]]))return r;
+  }
+}
+function buildRounds(){
+  const t=T(),idx=t.names.map((_,i)=>i);
+  if(S.task==='test')return buildTest();
+  if(S.task==='sharps'||S.task==='flats')return makeRow();   // eine kurze Notenreihe
+  if(S.task!=='scale')return shuffle([...idx,...idx]);
+  if(S.level===1)return [0,1,2,3,4,5,6,7,6,5,4,3,2,1,0];   // Treppe hinauf und hinunter
+  return [...makeRow(),...makeRow(),...makeRow()];
+}
+
+/* ---------- Spielablauf ---------- */
+function show(id){['home','learn','game','result','play'].forEach(s=>$(s).hidden=s!==id);window.scrollTo({top:0})}
+const fmt=p=>p<0?'−'+Math.abs(p):String(p);
+const total=()=>S.rounds.length;
+
+function start(task,level){
+  clearTimeout(S.timer);S.play=false;clearTimeout(G.timer);
+  S.task=task;S.level=level;
+  Object.assign(S,{rounds:buildRounds(),index:0,points:0,correct:0,outcomes:[],answers:[]});
+  const t=T(),rows=ROWS();
+  const mode=task==='test'?'20 Fragen':task==='sharps'||task==='flats'?'Übung':task==='scale'?(level===1?'Tonleiter-Treppe':'Notenreihen'):task==='sharps'?(level===1?'Üben':'Notenreihen'):(level===1?'Üben':'Punktejagd');
+  $('lvlpill').textContent=t.label+' · '+mode;
+  $('back').textContent=task==='test'?'← Übersicht Test':'← Merkbild';
+  $('gametitle').textContent=task==='test'?'Abschlusstest: Wie heißt die Note?':rows?'Bestimme die Notennamen!':task==='scale'&&level===1?'Die Treppe hinauf und wieder hinunter':t.title;
+  $('gamerule').textContent=task==='test'?'Tippe die richtige Antwort an. Kein Punktabzug.':rows?(task==='sharps'?'Eine Reihe mit 10 Kreuz-Noten. Erst die Note lesen, dann „-is“ anhängen. Kein Punktabzug – einfach üben.':task==='flats'?'Eine Reihe mit 10 b-Noten. Erst die Note lesen, dann „-es“ anhängen. Denk an die Ausnahmen es, as und b!':'3 Reihen mit je 10 Noten. Fülle die Kästchen von links nach rechts. Richtig +1 · Falsch −1 Punkt.')
+    :task==='scale'?'Die Noten kommen der Reihe nach: erst von c bis zum hohen c, dann wieder hinunter. Hör genau hin!'
+    :task==='sharps'?'Lies zuerst die Note ohne Kreuz und hänge dann „-is“ an.'
+    :level===1?'Ziehe den passenden Buchstaben ins Kästchen.':'Ordne jeder Note ihren Buchstaben zu. Richtig +1 · Falsch −1 Punkt, auch unter 0.';
+  if(task==='test')$('keyhelp').textContent='Eine von vier Antworten ist richtig.';
+  else if(LONG())$('keyhelp').textContent=rows?'Namen antippen oder ins leuchtende Kästchen ziehen.':'Namen ins Kästchen ziehen – oder antippen und dann das Kästchen antippen.';
+  else $('keyhelp').innerHTML=(rows?'Buchstaben antippen oder ins leuchtende Kästchen ziehen – oder Taste ':'Ziehen, antippen + Kästchen antippen, oder Taste ')+uniq(t).map(n=>`<span class="kbd">${n.toUpperCase()}</span>`).join(' ')+' drücken.';
+  if(STAFFED.includes(task))$('helpstaff').innerHTML=learnStaff(task,'hp',false);
+  $('helpletters').textContent=t.letters;
+  $('helptitle').textContent=task==='scale'?'Schau dir die Tonleiter noch einmal an':task==='sharps'?'Schau dir die Kreuz-Noten noch einmal an':'Schau dir den Merksatz noch einmal an';
+  $('score').hidden=level!==2;$('tally').hidden=level===2;
+  $('scorerule').hidden=true;$('scorebtn').setAttribute('aria-expanded','false');
+  const ns=nextStep();$('skiplabel').textContent='Überspringen';$('skip').title='Übung überspringen – weiter zu '+ns.label;$('skip').setAttribute('aria-label','Übung überspringen, weiter zu '+ns.label);
+  show('game');render();
+  $('round').setAttribute('tabindex','-1');$('round').focus({preventScroll:true});
+}
+function renderSegs(){
+  $('segs').style.gridTemplateColumns=`repeat(${total()},1fr)`;
+  $('segs').style.gap=total()>16?'3px':'5px';
+  $('segs').innerHTML=S.rounds.map((_,i)=>{
+    const c=i<S.outcomes.length?(S.outcomes[i]?'ok':'no'):(i===S.index&&!S.locked?'cur':'');
+    return `<span class="seg ${c}"></span>`}).join('');
+}
+function updateScore(){$('tally').textContent=S.correct+' richtig';$('scoreval').textContent=fmt(S.points)}
+function makeSlot(cls){
+  const b=document.createElement('button');b.id='slot';b.className=cls+' empty';b.setAttribute('aria-label','Leeres Antwortkästchen');
+  b.onclick=()=>{if(S.selected)assign(S.selected)};return b;
+}
+function render(){
+  S.locked=false;S.selected=null;
+  $('help').hidden=true;$('timer').classList.remove('run');
+  $('scorebtn').classList.remove('up','down');
+  renderSegs();updateScore();
+  const rows=ROWS();
+  $('stage').classList.toggle('rows',rows);
+  $('answerzone').hidden=rows;
+  $('answerzone').querySelector('#slot')?.remove();
+  if(rows){
+    const r=Math.floor(S.index/ROWLEN),start=r*ROWLEN;
+    $('round').innerHTML=total()>ROWLEN?`Reihe ${r+1} <span>von ${total()/ROWLEN} · Note ${S.index-start+1} von ${ROWLEN}</span>`:`Note ${S.index+1} <span>von ${ROWLEN}</span>`;
+    $('gamestaff').className='';
+    const boxes=[];
+    for(let i=0;i<ROWLEN;i++){
+      const k=start+i;
+      if(k===S.index){boxes.push(makeSlot('box slot'+(LONG()?' long':'')));continue}
+      const d=document.createElement('div');d.className='box'+(LONG()?' long':'');
+      if(k<S.answers.length){const ok=S.outcomes[k],right=T().names[S.rounds[k]];
+        d.classList.add(ok?'ok':'no');d.innerHTML=ok?right:`${right}<small>nicht ${S.answers[k]}</small>`}
+      boxes.push(d);
+    }
+    const wrap=document.createElement('div');wrap.className='rowwrap';
+    const inner=document.createElement('div');inner.className='rowinner';inner.innerHTML=rowStaff();
+    const bx=document.createElement('div');bx.className='boxes';bx.replaceChildren(...boxes);
+    inner.append(bx);wrap.append(inner);$('gamestaff').replaceChildren(wrap);
+    const sl=$('slot'),wr=wrap;
+    requestAnimationFrame(()=>{wr.scrollLeft=Math.max(0,sl.offsetLeft-wr.clientWidth/2+sl.offsetWidth/2)});
+  }else{
+    $('round').innerHTML=`${S.task==='test'?'Frage':'Note'} ${S.index+1} <span>von ${total()}</span>`;
+    $('gamestaff').className='staff-box';
+    $('gamestaff').innerHTML=gameStaff(S.rounds[S.index]);
+    $('answerzone').append(makeSlot('slot'+(LONG()?' long':'')));
+  }
+  $('feedback').textContent='';$('feedback').className='feedback';
+  $('bank').replaceChildren(...(S.task==='test'?bank():shuffle(uniq(T()))).map(makeTile));
+}
+function makeTile(v){
+  const b=document.createElement('button');
+  b.className='tile'+(LONG()?' long':'');b.textContent=v;b.dataset.v=v;
+  b.setAttribute('aria-label','Buchstabe '+v);b.setAttribute('aria-pressed','false');
+  let dragged=false;
+  b.addEventListener('click',()=>{if(dragged){dragged=false;return}ROWS()||S.task==='test'?assign(v):choose(v)});
+  b.addEventListener('pointerdown',e=>{
+    if(e.button!==0||S.locked)return;
+    const sx=e.clientX,sy=e.clientY;let ghost=null,over=false;dragged=false;
+    try{b.setPointerCapture(e.pointerId)}catch(_){}
+    const move=ev=>{
+      if(!ghost&&Math.hypot(ev.clientX-sx,ev.clientY-sy)>6){
+        ghost=document.createElement('div');ghost.className='drag-ghost'+(v.length>1?' long':'');ghost.textContent=v;document.body.append(ghost);dragged=true}
+      if(ghost){
+        ghost.style.left=ev.clientX-34+'px';ghost.style.top=ev.clientY-36+'px';
+        const el=document.elementFromPoint(ev.clientX,ev.clientY);
+        over=!!(el&&el.closest('#slot'));$('slot')?.classList.toggle('over',over)}
+    };
+    const finish=cancel=>{
+      if(ghost){ghost.remove();if(over&&!cancel)assign(v)}
+      $('slot')?.classList.remove('over');
+      b.removeEventListener('pointermove',move);b.removeEventListener('pointerup',up);b.removeEventListener('pointercancel',stop);
+    };
+    const up=()=>finish(false),stop=()=>finish(true);
+    b.addEventListener('pointermove',move);b.addEventListener('pointerup',up);b.addEventListener('pointercancel',stop);
+  });
+  return b;
+}
+function choose(v){
+  if(S.locked)return;S.selected=v;
+  document.querySelectorAll('.tile').forEach(b=>{const on=b.dataset.v===v;b.classList.toggle('selected',on);b.setAttribute('aria-pressed',String(on))});
+  $('slot').classList.add('armed');
+}
+function assign(v){
+  if(S.locked||!bank().includes(v))return;
+  const slot=$('slot');slot.textContent=v;slot.classList.remove('empty','armed');slot.classList.add('filled');slot.setAttribute('aria-label','Antwort: '+v);
+  evaluate(v);
+}
+function evaluate(v){
+  S.locked=true;
+  const t=T(),n=S.rounds[S.index],right=t.names[n],ok=v===right,rows=ROWS();
+  S.outcomes.push(ok);S.answers.push(v);
+  if(ok){S.correct++;S.points++}else if(S.level===2)S.points--;
+  tone(t.freq[n]);
+  $('slot').classList.add(ok?'good':'bad');
+  document.querySelectorAll('.tile').forEach(b=>{b.disabled=true;b.classList.remove('selected');if(b.dataset.v===right)b.classList.add('right')});
+  const fb=$('feedback');fb.className='feedback '+(ok?'ok':'no');
+  const why=S.task==='test'?'.':S.task==='scale'?` – sie liegt ${t.hint[n]}.`:S.task==='sharps'||S.task==='flats'?`: ${t.hint[n]}.`:` – wie „${t.words[n]}“.`;
+  const name=(S.task==='scale'&&n===7)||(S.task==='test'&&t.pos[n]===10)?'c (das hohe c)':right;
+  fb.textContent=ok?`Richtig! Diese Note heißt ${name}.`+(S.level===2?' +1 Punkt':''):`Fast! Diese Note heißt ${name}${why}`+(S.level===2?' −1 Punkt':'');
+  if(S.level===2)$('scorebtn').classList.add(ok?'up':'down');
+  updateScore();renderSegs();
+  if(!ok&&!rows)$('gsvg').classList.add('reveal');
+  const help=S.level===1&&!ok&&!rows&&S.task!=='test';
+  const wait=help?8000:rows?(ok?750:2400):S.task==='test'?(ok?1000:2000):(ok?1600:2400);
+  if(help){
+    $('help').hidden=false;
+    const tm=$('timer');tm.querySelector('span').style.animationDuration=wait+'ms';
+    tm.classList.remove('run');void tm.offsetWidth;tm.classList.add('run');
+  }
+  S.timer=setTimeout(advance,wait);
+}
+function advance(){
+  clearTimeout(S.timer);
+  if(!S.locked)return;
+  if(S.index<total()-1){S.index++;render();return}
+  finish();
+}
+function renderBreakdown(){
+  const t=T(),agg={};
+  S.rounds.forEach((n,i)=>{const a=t.area[n];agg[a]=agg[a]||[0,0];agg[a][1]++;if(S.outcomes[i])agg[a][0]++});
+  $('breakdown').innerHTML=['Linien','Zwischenräume','Tonleiter','Kreuz ♯','b ♭'].filter(a=>agg[a]).map(a=>{
+    const [r,n]=agg[a],q=r/n,cls=q===1?'':q>=.5?'mid':'low';
+    return `<div class="bd-row"><span>${a}</span><b>${r} / ${n}</b><div class="bar"><span class="${cls}" style="width:${Math.max(q*100,4)}%"></span></div></div>`}).join('');
+}
+function finish(){
+  show('result');
+  $('learnagain').textContent='Merkbild ansehen';
+  const L2=S.level===2,c=S.correct,N=total(),t=T();
+  $('reseyebrow').textContent=`${t.label} · alle ${N} Noten geschafft`;
+  $('resbig').innerHTML=L2?`${fmt(S.points)} <small>Punkte</small>`:`${c}<small> / ${N}</small>`;
+  $('ressub').textContent=S.task==='test'?'Noten richtig erkannt':L2?`${c} richtige und ${N-c} falsche Antworten`:'Noten richtig erkannt';
+  $('dots').className='dots'+(N>16?' many':'');
+  $('dots').innerHTML=S.outcomes.map((o,i)=>`<span class="dot ${o?'ok':''}" role="img" aria-label="Note ${i+1}: ${o?'richtig':'falsch'}">${o?'✓':'✕'}</span>`).join('');
+  const all={lines:'Alle fünf Linien sitzen!',spaces:'Alle vier Zwischenräume sitzen!',scale:'Du kannst die ganze Tonleiter lesen!',sharps:'Alle Kreuz-Noten sitzen!',flats:'Alle b-Noten sitzen!',test:'Test bestanden – alles richtig!'}[S.task];
+  $('restitle').textContent=c===N?all:c>=Math.ceil(N*.7)?'Du kennst schon viele Noten!':'Mit jeder Runde wirst du sicherer.';
+  // Fehleranalyse: welche Noten waren schwierig?
+  const miss={};S.outcomes.forEach((o,i)=>{if(!o){const nm=S.rounds[i]===7&&S.task==='scale'?'hohes c':t.names[S.rounds[i]];miss[nm]=(miss[nm]||0)+1}});
+  const hard=Object.keys(miss).sort((a,b)=>miss[b]-miss[a]).slice(0,3);
+  const tip=hard.length?` Übe besonders: ${hard.join(', ')}.`:'';
+  if(L2||['sharps','flats','test'].includes(S.task))markDone(S.task);
+  $('breakdown').hidden=S.task!=='test';
+  if(S.task==='test')renderBreakdown();
+  const lu=$('levelup');lu.hidden=false;
+  const goTask=k=>()=>{showTask(k);show('learn')};
+  if(S.task==='sharps'){
+    $('restext').textContent='Kreuz-Noten geübt! Als Nächstes lernst du Noten mit b.'+tip;
+    lu.textContent='Weiter zu Aufgabe 5 · b-Noten →';lu.onclick=goTask('flats');
+  }else if(S.task==='flats'){
+    $('restext').textContent='b-Noten geübt! Jetzt kannst du im Abschlusstest zeigen, was du gelernt hast.'+tip;
+    lu.textContent='Weiter zum Abschlusstest →';lu.onclick=goTask('test');
+  }else if(S.task==='test'){
+    $('restext').textContent=(c>=18?'Ausgezeichnet – du liest den Bassschlüssel sicher!':c>=14?'Gut gemacht! Schau dir die Bereiche mit den kürzeren Balken noch einmal an.':'Übe die Bereiche mit kurzen Balken noch einmal und probiere den Test dann erneut.');
+    lu.textContent='Zur Übersicht →';lu.onclick=goHome;
+  }else if(!L2){
+    $('restext').textContent=(S.task==='sharps'?'Die Kreuz-Noten klappen? Dann auf zu den Notenreihen – dort zählt jede Antwort.':S.task==='scale'?'Die Treppe sitzt? Dann mische die Noten in den Notenreihen – dort zählt jede Antwort.':'Bereit für die Punktejagd? In Level 2 zählt jede Antwort: +1 oder −1 Punkt.')+tip;
+    lu.textContent=S.task==='scale'||S.task==='sharps'?'Weiter zu den Notenreihen →':'Weiter zu Level 2 →';lu.onclick=()=>start(S.task,2);
+  }else if(S.task==='lines'){
+    $('restext').textContent='Die Linien kennst du jetzt. Als Nächstes kommen die Noten in den Zwischenräumen.'+tip;
+    lu.textContent='Weiter zu Aufgabe 2 · Zwischenräume →';lu.onclick=goTask('spaces');
+  }else if(S.task==='spaces'){
+    $('restext').textContent='Linien und Zwischenräume kennst du. Jetzt setzt du alles zur Tonleiter zusammen.'+tip;
+    lu.textContent='Weiter zu Aufgabe 3 · Tonleiter →';lu.onclick=goTask('scale');
+  }else if(S.task==='scale'){
+    $('restext').textContent=(c===N?'Fantastisch – alle 30 Noten richtig!':'Die Tonleiter kennst du jetzt.')+' Als Nächstes lernst du Noten mit Kreuz.'+tip;
+    lu.textContent='Weiter zu Aufgabe 4 · Kreuz-Noten →';lu.onclick=goTask('sharps');
+  }else{
+    $('restext').textContent=(c===N?'Fantastisch – alle Kreuz-Noten richtig! Damit hast du alle Übungen zum Bassschlüssel geschafft.':'Spiele neue Notenreihen oder sieh dir das Merkbild erneut an.')+tip;
+    lu.textContent='Zur Übersicht →';lu.onclick=goHome;
+  }
+}
+
+/* ---------- Navigation ---------- */
+let done={};try{done=JSON.parse(localStorage.getItem('bass-done')||'{}')}catch(e){}
+function markDone(k){done[k]=true;try{localStorage.setItem('bass-done',JSON.stringify(done))}catch(e){}paintDone()}
+function paintDone(){document.querySelectorAll('[data-done]').forEach(el=>el.hidden=!done[el.dataset.done])}
+function goHome(){clearTimeout(S.timer);S.locked=true;paintDone();show('home')}
+function openTask(k){showTask(k);show('learn')}
+// Lernweg: was kommt nach der aktuellen Übung?
+function nextStep(){
+  if(S.task==='lines')return S.level===1?{label:'Level 2',go:()=>start('lines',2)}:{label:'Aufgabe 2',go:()=>openTask('spaces')};
+  if(S.task==='spaces')return{label:'Aufgabe 3',go:()=>openTask('scale')};
+  if(S.task==='scale')return S.level===1?{label:'Notenreihen',go:()=>start('scale',2)}:{label:'Aufgabe 4',go:()=>openTask('sharps')};
+  if(S.task==='sharps')return{label:'Aufgabe 5',go:()=>openTask('flats')};
+  if(S.task==='flats')return{label:'Abschlusstest',go:()=>openTask('test')};
+  return{label:'Übersicht',go:goHome};
+}
+function skip(){clearTimeout(S.timer);S.locked=true;nextStep().go()}
+$('skip').onclick=skip;
+$('home-link').onclick=goHome;$('tohome').onclick=goHome;
+$('cover-start').onclick=()=>openTask('lines');
+document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>openTask(b.dataset.goto));
+paintDone();
+
+
+/* ---------- Bedienung ---------- */
+document.querySelectorAll('.level[data-task]').forEach(b=>b.onclick=()=>start(b.dataset.task,+b.dataset.level));
+$('again').onclick=()=>S.play?G.replay():start(S.task,S.level);
+$('learnagain').onclick=$('back').onclick=()=>{if(S.play&&!$('result').hidden)return goHome();clearTimeout(S.timer);S.locked=true;showTask(S.task);show('learn')};
+$('next').onclick=advance;
+$('scorebtn').onclick=()=>{const h=!$('scorerule').hidden;$('scorerule').hidden=h;$('scorebtn').setAttribute('aria-expanded',String(!h))};
+document.addEventListener('keydown',e=>{
+  if($('game').hidden||e.ctrlKey||e.metaKey||e.altKey||S.task==='test')return;
+  const v=uniq(T()).find(n=>n.toLowerCase()===e.key.toLowerCase());
+  if(v&&!S.locked){e.preventDefault();assign(v)}
+  else if(S.locked&&e.key==='Enter'&&!$('help').hidden){e.preventDefault();advance()}
+});
+
+/* ================= SPIELE ================= */
+const G={};
+const posDesc=p=>p===10?'auf der Hilfslinie über dem System':p===9?'direkt über der obersten Linie':p%2===0?`auf der ${p/2+1}. Linie`:`im ${(p+1)/2}. Zwischenraum`;
+const nameOf=(p,a)=>a==='s'?SH[p]:a==='f'?FL[p]:NAT[p];
+const freqOf=(p,a)=>hz(SEMI[p]+(a==='s'?1:a==='f'?-1:0));
+function playSetup(pill,title,rule){
+  S.play=true;S.locked=true;clearTimeout(S.timer);clearTimeout(G.timer);
+  $('playpill').textContent=pill;$('playtitle').textContent=title;$('playrule').textContent=rule;show('play');
+}
+function playSegs(n,i,res){
+  return `<div class="segs" aria-hidden="true" style="grid-template-columns:repeat(${n},1fr)">`+
+    Array.from({length:n},(_,k)=>`<span class="seg ${k<res.length?(res[k]?'ok':'no'):k===i?'cur':''}"></span>`).join('')+'</div>';
+}
+function svgPoint(svg,e){const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(svg.getScreenCTM().inverse())}
+
+/* ---------- Spiel 1: Noten setzen ---------- */
+const targetLabel=it=>it.a?nameOf(it.p,it.a):it.p===10?'hohes c':NAT[it.p];
+const placeOk=(it,p,a)=>nameOf(p,a)===nameOf(it.p,it.a)&&(it.p!==10||p===10);
+function startPlace(pro){
+  const nat=shuffle([0,1,2,3,4,5,6,7,8,9,10]).slice(0,pro?5:10).map(p=>({p,a:''}));
+  const acc=pro?shuffle([3,4,5,6,7,8,9].flatMap(p=>[{p,a:'s'},{p,a:'f'}])).slice(0,5):[];
+  Object.assign(G,{game:'place',pro,items:shuffle([...nat,...acc]),i:0,res:[],pos:null,acc:'',checked:false,replay:()=>startPlace(pro)});
+  playSetup(pro?'Spiel 6 · Noten setzen · mit ♯ und ♭':'Spiel 6 · Noten setzen','Setze die Note an die richtige Stelle!',
+    pro?'Tippe auf die Linie oder den Zwischenraum und wähle das Vorzeichen: ohne, Kreuz oder b. Dann auf „Prüfen“ tippen.'
+       :'Tippe auf die Linie oder den Zwischenraum, wo die Note hingehört. Du kannst sie verschieben, bis du auf „Prüfen“ tippst.');
+  renderPlace();
+}
+function renderPlace(){
+  const it=G.items[G.i],n=G.items.length;
+  $('playboard').innerHTML=`
+    <div class="status"><div class="round">Note ${G.i+1} <span>von ${n}</span></div>${playSegs(n,G.i,G.res)}<div class="tally">${G.res.filter(Boolean).length} richtig</div></div>
+    <div class="target">Setze die Note<b>${targetLabel(it)}</b></div>
+    <div class="place-box"><svg id="psvg" class="place-svg" viewBox="0 0 420 180" tabindex="0" role="application" aria-label="Notensystem: Tippe auf eine Linie oder einen Zwischenraum. Mit Pfeiltasten verschieben, Enter zum Prüfen."></svg></div>
+    ${G.pro?`<div class="accs" role="group" aria-label="Vorzeichen"><button class="acc" data-a="">ohne</button><button class="acc" data-a="s">♯ Kreuz</button><button class="acc" data-a="f">♭ b</button></div>`:''}
+    <div class="controls"><button class="btn ghost" id="pup" aria-label="Note höher">▲ höher</button><button class="btn ghost" id="pdown" aria-label="Note tiefer">▼ tiefer</button><button class="btn" id="pcheck">Prüfen ✓</button><button class="btn brass" id="pnext" hidden>Weiter →</button></div>
+    <p class="feedback" id="pfb" role="status" aria-live="polite"></p>`;
+  drawPlace();
+  const svg=$('psvg');
+  const pFrom=e=>Math.max(0,Math.min(10,Math.round((140-svgPoint(svg,e).y)/10)));
+  svg.addEventListener('pointermove',e=>{if(G.checked)return;const g=svg.querySelector('#hover');if(g)g.setAttribute('transform',`translate(0 ${PY(pFrom(e),140)})`),g.style.opacity=.3});
+  svg.addEventListener('pointerleave',()=>{const g=svg.querySelector('#hover');if(g)g.style.opacity=0});
+  svg.addEventListener('pointerdown',e=>{if(G.checked)return;G.pos=pFrom(e);tone(freqOf(G.pos,G.acc));drawPlace()});
+  svg.addEventListener('keydown',e=>{
+    if(G.checked)return;
+    if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();G.pos=Math.max(0,Math.min(10,(G.pos??5)+(e.key==='ArrowUp'?1:-1)));tone(freqOf(G.pos,G.acc));drawPlace()}
+    else if(e.key==='Enter')checkPlace();
+  });
+  document.querySelectorAll('.acc').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.a===G.acc));
+    b.onclick=()=>{if(G.checked)return;G.acc=b.dataset.a;document.querySelectorAll('.acc').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));if(G.pos!=null)tone(freqOf(G.pos,G.acc));drawPlace()}});
+  $('pcheck').onclick=checkPlace;$('pnext').onclick=nextPlace;
+  const nudge=d=>{if(G.checked)return;G.pos=Math.max(0,Math.min(10,(G.pos??5)+(G.pos==null?0:d)));tone(freqOf(G.pos,G.acc));drawPlace()};
+  $('pup').onclick=()=>nudge(1);$('pdown').onclick=()=>nudge(-1);
+}
+function drawPlace(){
+  const it=G.items[G.i],base=140,x=240,svg=$('psvg');
+  let s=staffLines(14,406,base,1.8)+clef(30,PY(6,base));
+  s+=`<line x1="${x-26}" x2="${x+26}" y1="${PY(10,base)}" y2="${PY(10,base)}" stroke="#2a3142" stroke-width="1.4" stroke-dasharray="4 4" opacity=".35"/>`;
+  s+=`<g id="hover" style="opacity:0;transition:transform .08s" pointer-events="none"><ellipse cx="${x}" cy="0" rx="14" ry="9.6" fill="#c4862a"/></g>`;
+  if(G.pos!=null){
+    const ok=G.checked?placeOk(it,G.pos,G.acc):null,col=ok===null?'#c4862a':ok?'#2d7a4c':'#c13d36',y=PY(G.pos,base);
+    s+=ledgers(x,G.pos,base,24)+accSym(G.acc,x-31,y,col)+note(x,y,'pl'+G.i,col);
+  }
+  if(G.checked&&!placeOk(it,G.pos,G.acc)){
+    const cx=340,y=PY(it.p,base);
+    s+=`<g class="note-in">${ledgers(cx,it.p,base,24)}${accSym(it.a,cx-31,y,'#2d7a4c')}${note(cx,y,'pc'+G.i,'#2d7a4c')}
+      <text x="${cx}" y="${it.p>=8?y+30:y-16}" text-anchor="middle" font-family="Figtree,sans-serif" font-weight="700" font-size="15" fill="#2d7a4c">${targetLabel(it)}</text></g>`;
+  }
+  s+=`<rect x="110" y="${PY(10,base)-16}" width="296" height="${PY(0,base)-PY(10,base)+30}" fill="transparent"/>`;
+  svg.innerHTML=s;
+  $('pcheck').disabled=G.pos==null||G.checked;$('pup').disabled=$('pdown').disabled=G.checked;
+}
+function checkPlace(){
+  if(G.checked||G.pos==null)return;
+  const it=G.items[G.i],ok=placeOk(it,G.pos,G.acc);
+  G.checked=true;G.res.push(ok);tone(freqOf(it.p,it.a));drawPlace();
+  const accTxt=a=>a==='s'?', mit Kreuz':a==='f'?', mit b':'';
+  const fb=$('pfb');fb.className='feedback '+(ok?'ok':'no');
+  fb.textContent=ok?`Richtig! ${targetLabel(it)} liegt ${posDesc(it.p)}${accTxt(it.a)}.`
+    :`Nicht ganz. ${targetLabel(it)} gehört ${posDesc(it.p)}${accTxt(it.a)} – siehe grüne Note.`;
+  if(ok)G.timer=setTimeout(nextPlace,1500);else{$('pnext').hidden=false;$('pnext').focus()}
+}
+function nextPlace(){
+  clearTimeout(G.timer);
+  if(G.i<G.items.length-1){G.i++;G.pos=null;G.acc='';G.checked=false;renderPlace()}else finishPlay();
+}
+
+/* ---------- Spiel 7: Notenwörter (ohne Ton) ---------- */
+// Wörter als Notenfolge; „fis“, „as“ usw. stehen für je eine Note mit Vorzeichen
+const WL_PLAIN=['a-f-f-e','b-a-c-h','b-a-d','c-a-f-e','c-h-e-f','d-a-c-h','e-b-b-e','f-a-c-h','f-e-e','g-a-b-e','h-e-f-e','a-d-e'];
+const WL_SHARP=['fis-c-h','fis-c-h-e','eis','eis-c-a-f-e'];
+const WL_FLAT=['h-as-e','as-c-h-e','b-as-e'];
+const LPOS={a:[1,8],b:[9,2],c:[3,10],d:[4],e:[5],f:[6],g:[0,7],h:[2,9]};
+const ACCP={c:3,d:4,e:5,f:6,g:7,a:8,h:9};   // Vorzeichen-Noten im Bereich c–h
+function tokNote(t){
+  if(t==='b'){const p=LPOS.b[Math.floor(Math.random()*2)];return{t,p,a:'f'}}
+  if(t.length===1){const ps=LPOS[t];return{t,p:ps[Math.floor(Math.random()*ps.length)],a:''}}
+  const a=t.endsWith('is')?'s':'f';return{t,p:ACCP[t[0]],a};
+}
+const wordText=w=>w.map(c=>c.t).join('').toUpperCase();
+function startWords(){
+  const pick=(l,k)=>shuffle([...l]).slice(0,k);
+  const words=shuffle([...pick(WL_PLAIN,3),...pick(WL_SHARP,2),...pick(WL_FLAT,1)]).map(w=>w.split('-').map(tokNote));
+  Object.assign(G,{game:'words',words,wi:0,ans:[],res:[],replay:startWords});
+  playSetup('Spiel 7 · Notenwörter','Welches Wort steht in den Noten?','Benenne die Noten von links nach rechts – die Namen ergeben ein Wort. Mit Vorzeichen gilt: fis, cis … oder es, as – und ein h mit ♭ heißt b!');
+  renderWords();
+}
+function wordBank(w){ // a–h plus Vorzeichen-Namen, die im Wort vorkommen, und ihr „Gegenstück“
+  const extra=[];
+  w.forEach(c=>{if(c.t.length>1){const p=ACCP[c.t[0]];[c.t,c.a==='s'?FL[p]:SH[p]].forEach(x=>{if(x&&!extra.includes(x))extra.push(x)})}});
+  return{letters:'abcdefgh'.split(''),extra:shuffle(extra)};
+}
+function renderWords(){
+  const w=G.words[G.wi],n=G.words.length,done=G.ans.length===w.length;
+  const N=w.length,W=Math.max(150+N*100,460),base=110;
+  let s=`<svg class="word-svg" viewBox="0 0 ${W} 190" role="img" aria-label="Notenwort mit ${N} Noten">`;
+  if(!done)s+=`<rect x="${170+G.ans.length*100-44}" y="6" width="88" height="180" rx="12" fill="#f4e3c4"/>`;
+  s+=staffLines(16,W-16,base,1.6)+clef(30,PY(6,base));
+  w.forEach((c,i)=>{
+    const x=170+i*100,y=PY(c.p,base),a=G.ans[i],col=a?(a.ok?'#2d7a4c':'#c13d36'):i===G.ans.length?'#c4862a':INK,dx=c.a?8:0;
+    s+=ledgers(x+dx,c.p,base,22)+accSym(c.a,x-22,y,col)+note(x+dx,y,'w'+G.wi+'_'+i,col);
+    s+=`<rect x="${x-34}" y="140" width="68" height="42" rx="9" fill="${a?(a.ok?'#d8efdf':'#f8dcd8'):'#fff'}" stroke="${a?(a.ok?'#2d7a4c':'#c13d36'):i===G.ans.length?'#c4862a':'#cdbf9f'}" stroke-width="2"/>`;
+    if(a)s+=`<text x="${x}" y="170" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="${c.t.length>1?22:26}" fill="${a.ok?'#2d7a4c':'#c13d36'}">${c.t}</text>`;
+  });
+  s+='</svg>';
+  const bk=wordBank(w),tile=l=>`<button class="tile${l.length>1?' long':''}" data-l="${l}" aria-label="${l}">${l}</button>`;
+  $('playboard').innerHTML=`
+    <div class="status"><div class="round">Wort ${G.wi+1} <span>von ${n}</span></div>${playSegs(n,G.wi,G.res)}<div class="tally">${G.res.filter(Boolean).length} fehlerfrei</div></div>
+    <div class="place-box">${s}</div>
+    ${done?`<div class="word-reveal">${wordText(w)}</div>`:''}
+    <div${done?' hidden':''}>
+      <div class="bank" id="wbank" role="group" aria-label="Buchstaben a bis h">${bk.letters.map(tile).join('')}</div>
+      ${bk.extra.length?`<div class="bank extra" role="group" aria-label="Noten mit Vorzeichen">${bk.extra.map(tile).join('')}</div>`:''}
+      <p class="helper">Namen antippen${bk.extra.length?' – für Noten mit Vorzeichen die untere Reihe':''}. Am Computer gehen auch die Tasten A–H.</p>
+    </div>
+    <p class="feedback" id="wfb" role="status" aria-live="polite"></p>
+    <div class="controls"${done?'':' hidden'}><button class="btn brass" id="wnext">${G.wi<n-1?'Nächstes Wort →':'Zur Auswertung →'}</button></div>`;
+  document.querySelectorAll('#playboard .tile[data-l]').forEach(b=>b.onclick=()=>wordLetter(b.dataset.l));
+  if(done){$('wnext').onclick=nextWord;$('wnext').focus()}
+}
+function wordLetter(l){
+  const w=G.words[G.wi];if(G.ans.length>=w.length)return;
+  const c=w[G.ans.length],ok=l===c.t;
+  G.ans.push({l,ok});
+  const msg=ok?'':c.t==='b'?'Diese Note heißt b – ein h mit ♭ heißt b!'
+    :c.a==='s'?`Diese Note hat ein Kreuz: Sie heißt ${c.t}, nicht ${l}.`
+    :c.a==='f'?`Diese Note hat ein b: Sie heißt ${c.t}, nicht ${l}.`
+    :`Diese Note heißt ${c.t}, nicht ${l}.`;
+  renderWords();
+  const fb=$('wfb');
+  if(G.ans.length===w.length){
+    const all=G.ans.every(a=>a.ok);G.res.push(all);renderWords();
+    const f=$('wfb');f.className='feedback ok';f.textContent=(all?'Super! ':msg?msg+' ':'')+'Das Wort heißt '+wordText(w)+'.';
+  }else if(msg){fb.className='feedback no';fb.textContent=msg}
+}
+function nextWord(){if(G.wi<G.words.length-1){G.wi++;G.ans=[];renderWords()}else finishPlay()}
+
+/* ---------- Spiel 8: Noten-Memory ---------- */
+// 12 Karten (6 Paare): passt als 3 × 4 auf ein Smartphone
+const PAIRS=6;
+function memStaff(p,a,id){
+  const base=96,x=a?126:118;
+  return `<svg viewBox="0 0 160 116" class="mem-svg" aria-hidden="true">${staffLines(6,154,base,1.6)}
+    <g transform="translate(14 ${PY(6,base)}) scale(.72) translate(-14 ${-PY(6,base)})">${clef(14,PY(6,base))}</g>
+    ${ledgers(x,p,base,20)}${accSym(a,x-30,PY(p,base))}${note(x,PY(p,base),id)}</svg>`;
+}
+function startMemory(){
+  const nat=shuffle([0,1,2,3,4,5,6,7,8,9]).map(p=>({p,a:'',name:NAT[p]}));
+  const acc=shuffle([3,4,5,6,7,8,9].flatMap(p=>[{p,a:'s',name:SH[p]},{p,a:'f',name:FL[p]}]));
+  const items=[...nat.slice(0,3),...acc.slice(0,3)];
+  const cards=shuffle(items.flatMap((it,k)=>[{k,kind:'note',...it},{k,kind:'name',...it}]));
+  Object.assign(G,{game:'memory',cards,open:[],found:new Set(),moves:0,busy:false,replay:startMemory});
+  playSetup('Spiel 8 · Noten-Memory','Finde die Paare!','Decke zwei Karten auf: Passen Note und Name zusammen, bleiben sie offen. Wie viele Züge brauchst du?');
+  renderMemory();
+}
+function renderMemory(){
+  const c=G.cards;
+  $('playboard').innerHTML=`
+    <div class="status"><div class="round">Paare <span>${G.found.size} von ${PAIRS}</span></div><div class="tally">${G.moves} ${G.moves===1?'Zug':'Züge'}</div></div>
+    <div class="mem-grid" role="group" aria-label="Memory mit ${c.length} Karten">${c.map((cd,i)=>{
+      const up=G.open.includes(i)||G.found.has(cd.k),done=G.found.has(cd.k);
+      const face=cd.kind==='note'?memStaff(cd.p,cd.a,'mm'+i):`<span class="mem-name${cd.name.length>1?' long':''}">${cd.name}</span>`;
+      return `<button class="mem-card${up?' up':''}${done?' done':''}" data-i="${i}" aria-label="${up?(cd.kind==='note'?'Notenkarte':'Namenskarte '+cd.name):'Verdeckte Karte '+(i+1)}"${done?' disabled':''}>
+        <span class="mem-inner"><span class="mem-back" aria-hidden="true">♪</span><span class="mem-face">${face}</span></span></button>`}).join('')}</div>
+    <p class="feedback" id="mfb" role="status" aria-live="polite"></p>`;
+  document.querySelectorAll('.mem-card').forEach(b=>b.onclick=()=>flip(+b.dataset.i));
+}
+function flip(i){
+  if(G.busy||G.open.includes(i)||G.found.has(G.cards[i].k))return;
+  G.open.push(i);
+  if(G.open.length<2){renderMemory();return}
+  G.moves++;
+  const [a,b]=G.open.map(x=>G.cards[x]),match=a.k===b.k;
+  renderMemory();
+  const fb=$('mfb');
+  if(match){
+    G.found.add(a.k);G.open=[];renderMemory();
+    $('mfb').className='feedback ok';$('mfb').textContent=`Paar gefunden: ${a.name}!`;
+    if(G.found.size===PAIRS)G.timer=setTimeout(finishPlay,1100);
+  }else{
+    G.busy=true;fb.className='feedback no';fb.textContent='Kein Paar – merk dir die Karten!';
+    G.timer=setTimeout(()=>{G.open=[];G.busy=false;renderMemory()},1300);
+  }
+}
+
+/* ---------- Spiele: Auswertung ---------- */
+function finishPlay(){
+  show('result');
+  const g=G.game,lu=$('levelup');
+  $('breakdown').hidden=true;$('dots').className='dots';lu.hidden=false;
+  $('learnagain').textContent='Zur Übersicht';
+  if(g==='memory'){
+    $('reseyebrow').textContent='Spiel 8 · Noten-Memory';
+    $('resbig').innerHTML=`${G.moves}<small> Züge</small>`;
+    $('ressub').textContent=`Alle ${PAIRS} Paare gefunden`;
+    $('dots').innerHTML='';
+    $('restitle').textContent=G.moves<=9?'Super Gedächtnis!':G.moves<=14?'Toll gemacht!':'Geschafft!';
+    $('restext').textContent='Beim nächsten Mal werden neue Karten gemischt – versuch, mit weniger Zügen auszukommen.';
+    lu.textContent='Zur Übersicht →';lu.onclick=goHome;return;
+  }
+  const place=g==='place',N=place?G.items.length:G.words.length,c=G.res.filter(Boolean).length;
+  $('reseyebrow').textContent=place?'Spiel 6 · Noten setzen':'Spiel 7 · Notenwörter';
+  $('resbig').innerHTML=`${c}<small> / ${N}</small>`;
+  $('ressub').textContent=place?'Noten richtig gesetzt':'Wörter fehlerfrei gelesen';
+  $('dots').innerHTML=G.res.map((o,i)=>`<span class="dot ${o?'ok':''}" role="img" aria-label="${i+1}: ${o?'richtig':'falsch'}">${o?'✓':'✕'}</span>`).join('');
+  $('restitle').textContent=c===N?'Perfekt!':c>=Math.ceil(N*.7)?'Toll gemacht!':'Weiter so – Übung macht den Meister!';
+  $('restext').textContent=place?'Noten selbst zu setzen ist schwerer als sie zu lesen – du trainierst damit doppelt.'
+    :'Die Wörter waren: '+G.words.map(wordText).join(', ')+'.';
+  lu.textContent=place?'Weiter zu Spiel 7 · Notenwörter →':'Weiter zu Spiel 8 · Memory →';
+  lu.onclick=place?startWords:startMemory;
+}
+$('playback').onclick=goHome;
+document.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>{const k=b.dataset.play;k==='words'?startWords():k==='memory'?startMemory():startPlace(k==='pro')});
+document.addEventListener('keydown',e=>{
+  if($('play').hidden||G.game!=='words'||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(/^[a-h]$/i.test(e.key)){e.preventDefault();wordLetter(e.key.toLowerCase())}
+  else if(e.key==='Enter'&&$('wnext')&&!$('wnext').closest('[hidden]')){e.preventDefault();nextWord()}
+});
+</script>
+</body>
+</html>
